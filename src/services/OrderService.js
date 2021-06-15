@@ -2,10 +2,10 @@ const orderModel = require('../models/Order').Model,
   utils = require('../utils');
 
 
-module.exports.createOrder = async (clientId, body) => {
+module.exports.createOrder = async (body) => {
   const order = await orderModel.findOne({clientId: body.clientId, status: 'PENDING'})
   if (order) {
-    console.error(`Existing order in progress for clientId: ${clientId}`);
+    console.error(`Existing order in progress for clientId: ${body.clientId}`);
     throw new Error('EXISTING_ORDER_IN_PROGRESS')
   }
 
