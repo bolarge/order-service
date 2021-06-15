@@ -17,3 +17,12 @@ module.exports.createOrder = async (clientId, body) => {
     orderStatus: 'PENDING'
   });
 }
+
+module.exports.getOrder = async (orderId) => {
+  const order = await orderModel.findOne({orderId: orderId})
+  if (!order) {
+    console.error(`Order with orderId: ${orderId} not found`);
+    throw new Error('ORDER_NOT_FOUND')
+  }
+  return order;
+}
