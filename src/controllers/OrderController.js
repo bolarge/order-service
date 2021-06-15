@@ -4,8 +4,8 @@ const ServiceResponse = require('../response/ServiceResponse')
 module.exports = {
 
   createOrder: function (req, res) {
-    const { params: { clientId }, body } = req
-    return OrderService.createOrder(clientId, body )
+    const { body } = req
+    return OrderService.createOrder( body )
       .then((result) => {
         return res.status(200).json(new ServiceResponse( true, 'ORDER_CREATE_SUCCESS', result ))
       })
