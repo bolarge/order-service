@@ -6,7 +6,7 @@ module.exports = function (app) {
     ///////////////////////////
     // HEALTH CHECK ROUTES
     ///////////////////////////
-    app.get('/health', setupController.healthCheck);
+    app.get('/health', healthController.healthCheck);
 
     ///////////////////////////
     // ORDER ROUTES
