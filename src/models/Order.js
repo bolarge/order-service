@@ -18,10 +18,10 @@ const orderSchema = mongoose.Schema(
       type: String, required: true
     },
     orderItem: {
-      Array, required: false
+      type: Array, required: false
     },
     orderStatus: {
-      String, required: true
+      type: String, required: true
     }
   },
   {timestamps: true}
