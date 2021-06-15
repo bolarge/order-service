@@ -1,0 +1,30 @@
+{
+  "name": "order-service",
+  "version": "1.0.0",
+  "description": "order service for managing card orders",
+  "main": "pp.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/kvpafrica/order-service.git"
+  },
+  "author": "developers@getcarbon.co",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/kvpafrica/order-service#readme",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "express-joi-validation": "^5.0.0",
+    "joi": "^17.4.0",
+    "mongoose": "^5.12.13",
+    "mongoose-long": "^0.4.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.28.0",
+    "jest": "^27.0.4"
+  }
+}
