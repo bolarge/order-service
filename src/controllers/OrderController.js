@@ -26,7 +26,7 @@ module.exports = {
       });
   },
 
-  updateOder: function (req, res) {
+  updateOrder: function (req, res) {
     const {params: {orderId}, body: {status}} = req
     return OrderService.updateOrder(orderId, status)
       .then((result) => {
