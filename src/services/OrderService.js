@@ -2,12 +2,11 @@
  * Created by oghenerukevwe on 15/06/2021.
  */
 
-const orderModel = require('../models/Order').Model,
-  utils = require('../utils');
-
+const orderModel = require('../models/Order').Model
 
 module.exports.createOrder = async (body) => {
-  const order = await orderModel.find({clientId: body.clientId, status: 'PENDING'})
+  const order = await orderModel.findOne({clientId: body.clientId, status: 'PENDING'})
+  console.log(order)
   if (order) {
     console.error(`Existing order in progress for clientId: ${body.clientId}`);
     throw new Error('EXISTING_ORDER_IN_PROGRESS')
