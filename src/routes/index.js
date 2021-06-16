@@ -1,5 +1,5 @@
-const orderController = require('../Controllers/OrderController');
-const healthController = require('../Controllers/HealthController');
+const orderController = require('../controllers/OrderController');
+const healthController = require('../controllers/HealthController');
 
 module.exports = function (app) {
 
