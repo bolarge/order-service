@@ -18,8 +18,8 @@ module.exports = {
     const orderId = req.params.orderId;
     return OrderService.getOrder(orderId)
       .then((result) => {
-        const {status, orderId} = result;
-        return res.status(200).json(new ServiceResponse( true, 'ORDER_FOUND', {orderId, status} ))
+        const {orderStatus, id} = result;
+        return res.status(200).json(new ServiceResponse( true, 'ORDER_FOUND', {id, orderStatus} ))
       })
       .catch((err) => {
         return res.status(400).json(new ServiceResponse( false, err.message, null, [err] ))

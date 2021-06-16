@@ -3,8 +3,8 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
+const config = require('./src/config');
 
-const expressValidator = require('./middleware/expressValidator')
 
 app.use(express.json({limit: '20mb'}));
 
@@ -15,8 +15,11 @@ app.use(cors({
     exposedHeaders: ['Authorization', 'Content-Type', 'X-Entity', 'X-Browser-Token']
 }));
 
-require('./routes')(app)
+require('./src/routes')(app)
 
-app.use(expressValidator)
+app.listen(config.app.port);
+// shout out to the user
+console.log('Serving on port ' + config.app.port);
+// expose app
 
 module.exports = app

@@ -36,4 +36,4 @@ orderSchema.set('toJSON', {
 });
 
 module.exports.Schema = orderSchema;
-module.exports.Model = connection.model('DeliveryAddress', Schema, 'DeliveryAddress');
+module.exports.Model = connection.model('Order', orderSchema, 'order');
