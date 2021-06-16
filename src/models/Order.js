@@ -18,10 +18,10 @@ const orderSchema = mongoose.Schema(
       type: String, required: true
     },
     orderItem: {
-      Array, required: false
+      type: Array, required: false
     },
     orderStatus: {
-      String, required: true
+      type: String, required: true
     }
   },
   {timestamps: true}
@@ -36,4 +36,4 @@ orderSchema.set('toJSON', {
 });
 
 module.exports.Schema = orderSchema;
-module.exports.Model = connection.model('DeliveryAddress', Schema, 'DeliveryAddress');
+module.exports.Model = connection.model('Order', orderSchema, 'order');
