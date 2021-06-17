@@ -12,7 +12,6 @@ if (fs.existsSync(envfile)) {
 module.exports = {
   app: {
     name: "Order Service",
-    connectivityCheckURL: process.env.CONNECTIVITY_CHECK_URL || 'https://www.google.com/',
     env: process.env.NODE_ENV || 'development',
     port: process.env.PORT || 5000,
     logLevel: process.env.APP_LOG_LEVEL || 'debug',

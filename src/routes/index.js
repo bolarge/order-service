@@ -13,5 +13,5 @@ module.exports = function (app) {
     ///////////////////////////
     app.post('/v1/orders', orderController.createOrder);
     app.get('/v1/orders/:orderId', orderController.getOrder);
-
+    app.put('/v1/orders/:orderId/callback', orderController.updateOrder);
 }

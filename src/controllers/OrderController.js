@@ -24,6 +24,17 @@ module.exports = {
       .catch((err) => {
         return res.status(400).json(new ServiceResponse( false, err.message, null, [err] ))
       });
+  },
+
+  updateOrder: function (req, res) {
+    const {params: {orderId}, body: {status}} = req
+    return OrderService.updateOrder(orderId, status)
+      .then((result) => {
+        return res.status(200).json(new ServiceResponse(true, 'ORDER_UPDATED_SUCCESSFULLY', result))
+      })
+      .catch((err) => {
+        return res.status(500).json(new ServiceResponse(false, err.message, null, [err]))
+      });
   }
 }
 

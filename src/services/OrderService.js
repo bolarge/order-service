@@ -28,3 +28,12 @@ module.exports.getOrder = async (id) => {
   }
   return order;
 }
+
+module.exports.updateOrder = async (orderId, status) => {
+  const order = await orderModel.findById(orderId);
+  if (!order) {
+    console.error(`Order with orderId: ${orderId} not found`);
+    throw new Error('ORDER_NOT_FOUND')
+  }
+  return orderModel.findOneAndUpdate({_id: orderId}, {orderStatus: status}, {new: true})
+}
