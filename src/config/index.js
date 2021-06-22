@@ -27,5 +27,11 @@ module.exports = {
         poolSize: parseInt(process.env.DB_CON_POOL_SIZE) || 5
       }
     }
-  }
+  },
+  cardService: {
+    baseUrl: process.env.CARD_SERVICE_URL,
+    username: '',
+    password: '',
+    defaultCurrency: 'NGN'
+  },
 }
