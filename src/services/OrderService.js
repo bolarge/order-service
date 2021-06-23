@@ -31,11 +31,10 @@ module.exports.createOrder = async (body) => {
       orderItemModel.create({
         orderId: savedOrder._id,
         clientId: savedOrder.clientId,
-        item: item.type,
+        name: item.name,
         status: item.status
       })
     });
-
   return savedOrder;
 }
 
