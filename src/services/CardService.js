@@ -1,9 +1,8 @@
-const request = require('request-promise'),
-cardServiceConfig = require('../config').cardService,
-  DEFAULT_CARD_TYPE = 'PHYSICAL',
-  DEFAULT_CARD_CLASSIFICATION = 'DEBIT',
-  DEFAULT_COUNTRY = 'NG',
-  DEFAULT_CURRENCY = 'NGN'
+const request = require('request-promise-native'),
+  cardServiceConfig = require('../config').cardService,
+  Utils = require('../utils'),
+  CARD_CREATION_RESERVATION_TYPE = 'CARD_CREATION',
+  CARD_CLASSIFICATION_TYPE = 'DEBIT'
 
 
 /**
@@ -15,6 +14,7 @@ cardServiceConfig = require('../config').cardService,
  * @param headers {object | null}
  */
 const makeRequest = (path, method, countryCode, body = true, qs = null, headers = {}) => {
+  console.log("making request to ", path)
   const options = {
     url: `${cardServiceConfig.baseUrl}${path}`,
     method,
@@ -30,13 +30,41 @@ const makeRequest = (path, method, countryCode, body = true, qs = null, headers 
     .then(resp => resp.data);
 };
 
-/**
- * Create card on cards service
- * @param createCardRequest {{country: string, reservationId: (Object.reservationId|{type: StringConstructor, required: boolean}), cardHolderId: ({type: StringConstructor, required: boolean}|string), currency: {code: string}, type: string, classification: string}}
- * @returns {Promise<Card>}
- */
-const createCard = (createCardRequest) => {
-  return makeRequest(`/cardholders/${createCardRequest.cardHolderId}/cards`, "POST", createCardRequest.country, createCardRequest);
+const initiateReservation = (order, countryConfig) => {
+  const reservationRequest = {
+    cardHolder: {
+      id: order.clientId,
+      name: order.name
+    },
+    reservableParameters: {
+      accountCurrency: countryConfig.currencyCode,
+      cardCurrency: countryConfig.currencyCode,
+    },
+    cardType: cardServiceConfig.cardType,
+    country: order.country,
+    reservationType: CARD_CREATION_RESERVATION_TYPE
+  };
+  console.log(reservationRequest);
+  return makeRequest(`/cardholders/${order.clientId}/cards/initiate-action`, "POST", order.country, reservationRequest);
+};
+
+const createCard = (order, countryConfig, reservationResponse) => {
+  const createCardRequest = {
+    cardHolder: {
+      id: order.clientId,
+      name: order.name
+    },
+    type: cardServiceConfig.cardType,
+    classification: CARD_CLASSIFICATION_TYPE,
+    country: countryConfig.code,
+    reservationId: reservationResponse.id,
+    currency: countryConfig.currencyCode
+  };
+
+  // TODO: remove log
+  console.log(createCardRequest);
+  return makeRequest(`/cardholders/${createCardRequest.cardHolder.id}/cards`,
+    "POST", createCardRequest.country, createCardRequest);
 };
 
 /**
@@ -44,16 +72,12 @@ const createCard = (createCardRequest) => {
  * @param order {object}
  * @return {Promise<any>}
  */
-module.exports.create = async (order) => {
-  const createCardRequest = {
-    cardHolderId: order.clientId,
-    type: DEFAULT_CARD_TYPE,
-    classification: DEFAULT_CARD_CLASSIFICATION,
-    country: DEFAULT_COUNTRY,
-    reservationId: order.reservationId,
-    currency: {
-      code: DEFAULT_CURRENCY
-    }
-  };
-  return await createCard(createCardRequest);
+module.exports.handleCardCreation = async (order) => {
+  const countryConfig = Utils.getCountryConfig(order.country);
+
+  const reservationResponse = await initiateReservation(order, countryConfig);
+
+  console.log(reservationResponse);
+
+  return await createCard(order, countryConfig, reservationResponse);
 };

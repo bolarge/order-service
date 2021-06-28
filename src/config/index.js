@@ -17,11 +17,11 @@ module.exports = {
     logLevel: process.env.APP_LOG_LEVEL || 'debug',
   },
   db: {
-    app:{
+    app: {
       url: process.env.MONGODB_URL || 'mongodb://localhost:27017/orderservice',
       options: {
         useNewUrlParser: true,
-        useUnifiedTopology: true,
+        // useUnifiedTopology: true,
         useCreateIndex: true,
         useFindAndModify: false,
         poolSize: parseInt(process.env.DB_CON_POOL_SIZE) || 5
@@ -29,9 +29,19 @@ module.exports = {
     }
   },
   cardService: {
-    baseUrl: process.env.CARD_SERVICE_URL,
-    username: '',
-    password: '',
-    defaultCurrency: 'NGN'
+    baseUrl: process.env.CARD_SERVICE_URL || 'localhost:8080',
+    username: process.env.CARD_SERVICE_USERNAME || 'test',
+    password: process.env.CARD_SERVICE_PASSWORD || 'test',
+    cardType: process.env.CARD_TYPE || 'PHYSICAL',
   },
+  deliveryService: {
+    baseUrl: process.env.DELIVERY_SERVICE_URL || 'localhost:9080',
+  },
+  countryConfig: {
+    ng: {
+      currencyCode: "NGN",
+      name: "Ghana",
+      code: "NG"
+    }
+  }
 }

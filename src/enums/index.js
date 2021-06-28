@@ -1,10 +1,10 @@
-module.exports.OrderStatus = {
+module.exports.Status = {
   PENDING: 'PENDING',
   SUCCESS: 'SUCCESS',
   FAILED: 'FAILED'
 }
 
-module.exports.OrderItem = {
+module.exports.OrderItemType = {
   CARD_ISSUANCE: 'card-issuance',
   DELIVERY: 'delivery'
 }
