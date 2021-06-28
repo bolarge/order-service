@@ -1,6 +1,5 @@
 const orderController = require('../controllers/OrderController'),
-  healthController = require('../controllers/HealthController'),
-  deliveryController = require('../controllers/DeliveryController')
+  healthController = require('../controllers/HealthController')
 
 module.exports = function (app) {
 
@@ -16,6 +15,4 @@ module.exports = function (app) {
   app.get('/v1/orders/:orderId', orderController.getOrder);
   app.put('/v1/orders/:orderId/payment', orderController.updateOrderPaymentStatus);
   app.put('/v1/orders/:orderId/status', orderController.updateOrderStatus);
-  app.put('/v1/orders/delivery/:cardId', deliveryController.getDeliveryAddress);
-
 }
