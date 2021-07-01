@@ -7,6 +7,7 @@ const mongoose = require('mongoose'),
   BaseSchema = require('./baseSchema'),
   connection = require('../db/connection')
 
+
 const schemaObj = BaseSchema.getSchema(
   {
     clientId: {
@@ -21,14 +22,28 @@ const schemaObj = BaseSchema.getSchema(
     deliveryId: {
       type: String, required: true
     },
+    type: {
+      type: String,
+      enum: ['CARD_REQUEST', 'DELIVERY_ONLY'],
+      required: true
+    },
     status: {
-      type: String, required: true
+      type: String,
+      enum:['PENDING', 'SUCCESS', 'FAILED'],
+      required: true
     },
     paymentStatus: {
-      type: String, required: true
+      type: String,
+      enum:['PENDING', 'SUCCESS', 'FAILED'],
+      required: true
+    },
+    deliveryStatus: {
+      type: String,
+      enum:['PENDING', 'SUCCESS', 'FAILED', 'IN_PROGRESS'],
+      required: true
     },
     failureMessage: {
-      type: String, required: false
+      type: String
     },
     cardId: {
       type: String

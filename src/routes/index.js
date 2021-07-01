@@ -14,5 +14,4 @@ module.exports = function (app) {
   app.post('/v1/orders', orderController.createOrder);
   app.get('/v1/orders/:orderId', orderController.getOrder);
   app.put('/v1/orders/:orderId/payment', orderController.updateOrderPaymentStatus);
-  app.put('/v1/orders/:orderId/status', orderController.updateOrderStatus);
 }
