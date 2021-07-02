@@ -4,42 +4,56 @@
  */
 
 const mongoose = require('mongoose'),
+  BaseSchema = require('./baseSchema'),
   connection = require('../db/connection')
 
-const orderSchema = mongoose.Schema(
+
+const schemaObj = BaseSchema.getSchema(
   {
     clientId: {
       type: String, required: true
     },
-    reservationId: {
+    name: {
+      type: String, required: true
+    },
+    country: {
       type: String, required: true
     },
     deliveryId: {
       type: String, required: true
     },
-    orderItem: {
-      type: Array, required: false
+    type: {
+      type: String,
+      enum: ['CARD_REQUEST', 'DELIVERY_ONLY'],
+      required: true
     },
     status: {
-      type: String, required: true
+      type: String,
+      enum:['PENDING', 'SUCCESS', 'FAILED'],
+      required: true
     },
     paymentStatus: {
-      type: String, required: true
+      type: String,
+      enum:['PENDING', 'SUCCESS', 'FAILED'],
+      required: true
+    },
+    deliveryStatus: {
+      type: String,
+      enum:['PENDING', 'SUCCESS', 'FAILED', 'IN_PROGRESS'],
+      required: true
     },
     failureMessage: {
-      type: String, required: false
+      type: String
+    },
+    cardId: {
+      type: String
     }
-  },
-  {timestamps: true}
+  }
 );
 
+const orderSchema = new mongoose.Schema(schemaObj);
 
-orderSchema.set('toJSON', {
-  transform: function (doc, ret, opt) {
-    ret.id = ret._id;
-    return ret
-  }
-});
+orderSchema.set('toJSON', BaseSchema.transformToJSON);
 
 module.exports.Schema = orderSchema;
 module.exports.Model = connection.model('Order', orderSchema, 'order');
