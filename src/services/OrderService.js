@@ -41,10 +41,15 @@ module.exports.createOrder = async (body) => {
   });
 }
 
-module.exports.getOrder = async (id) => {
-  const order = await orderModel.findById(id)
+module.exports.getOrder = async (type, value) => {
+  let order;
+  if ('orderId' === type) {
+    order = await orderModel.findById(id)
+  } else {
+    order = await orderModel.findOne({cardId: value}).sort('-createdAt');
+  }
   if (!order) {
-    console.error(`Order with id: ${id} not found`);
+    console.error(`Order not found`);
     throw new Error('Order not found')
   }
   return order;

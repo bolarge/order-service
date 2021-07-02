@@ -15,8 +15,9 @@ module.exports = {
   },
 
   getOrder: function (req, res) {
-    const orderId = req.params.orderId;
-    return orderService.getOrder(orderId)
+    const type = req.query.type;
+    const value = req.query.value;
+    return orderService.getOrder(type, value)
       .then((result) => {
         return res.status(200).json(new ServiceResponse(true, 'Retrieved order successfully', result))
       })
