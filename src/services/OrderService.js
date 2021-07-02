@@ -100,3 +100,12 @@ module.exports.updateOrderWithCardInfo = async (result, order, status) => {
     paymentStatus: status
   }, {new: true})
 }
+
+module.exports.getOrderHistory = async (clientId) => {
+  const orders = await orderModel.find({clientId: clientId}).sort('-createdAt')
+  if (!orders.length) {
+    console.error(`No order exists for clientId, {}`, clientId);
+    throw new Error('No orders found')
+  }
+  return orders;
+}
