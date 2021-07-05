@@ -4,7 +4,7 @@
  */
 
 const mongoose = require('mongoose'),
-  BaseSchema = require('./baseSchema'),
+  BaseSchema = require('./BaseSchema'),
   connection = require('../db/connection')
 
 
