@@ -22,7 +22,6 @@ module.exports.transformToJSON = {
     delete ret.__v;
     delete ret.createdAt;
     delete ret.updatedAt;
-    delete ret.cardCreationStatus;
     return ret;
   }
 }

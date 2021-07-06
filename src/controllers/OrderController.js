@@ -29,9 +29,9 @@ module.exports = {
     const {params: {orderId}, body: {status}} = req
     return orderService.updateOrderPaymentStatus(orderId, status)
       .then((result) => {
-        const {id, type, paymentStatus, status} = result;
+        const {id, type, paymentStatus, status, cardId} = result;
         return res.status(200).json(new ServiceResponse(true, 'Order payment status updated successfully', {
-          id, type, status, paymentStatus
+          id, type, status, paymentStatus, cardId
         }))
       })
       .catch((err) => {

@@ -20,7 +20,7 @@ module.exports = {
       url: process.env.MONGODB_URL || 'mongodb://localhost:27017/orderservice',
       options: {
         useNewUrlParser: true,
-        useUnifiedTopology: true,
+        // useUnifiedTopology: true,
         useCreateIndex: true,
         useFindAndModify: false,
         poolSize: parseInt(process.env.DB_CON_POOL_SIZE) || 5
