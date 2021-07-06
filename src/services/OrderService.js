@@ -31,9 +31,11 @@ module.exports.createOrder = async (body) => {
       type: OrderType.CARD_REQUEST,
     });
   }
+  const lastFailedOrder = await orderModel.findOne({clientId: body.clientId, status: Status.FAILED}).sort('-createdAt')
   return orderModel.create({
     ...newOrder,
     type: OrderType.DELIVERY_ONLY,
+    cardId: lastFailedOrder.cardId
   });
 }
 
