@@ -11,7 +11,7 @@ const orderModel = require('../models/Order').Model,
 
 
 module.exports.createOrder = async (body) => {
-  const order = await orderModel.findOne({clientId: body.clientId, status: Status.PENDING})
+  const order = await orderModel.findOne({clientId: body.clientId, status: Status.ORDER_CREATED})
   const clientId = body.clientId;
   if (order) {
     console.error(`Existing order exists for clientId, {id}`, clientId);
