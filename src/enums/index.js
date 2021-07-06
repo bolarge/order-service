@@ -1,8 +1,8 @@
 module.exports.Status = {
-  PENDING: 'PENDING',
-  SUCCESS: 'SUCCESS',
   FAILED: 'FAILED',
-  IN_PROGRESS: 'IN_PROGRESS'
+  SUCCESS: 'SUCCESS',
+  ORDER_CREATED: 'ORDER_CREATED',
+  IN_TRANSIT: 'IN_TRANSIT'
 }
 
 module.exports.OrderType = {
@@ -11,7 +11,8 @@ module.exports.OrderType = {
 }
 
 module.exports.StatusMessages = {
-  CARD_ISSUANCE_FAILED: 'Failed to create card',
+  CARD_CREATION_FAILED: 'Failed to create card',
   DELIVERY_FAILED: 'Failed to deliver card',
   PAYMENT_FAILED: 'Order payment failed'
 }
+
