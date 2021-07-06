@@ -5,7 +5,9 @@
 
 const mongoose = require('mongoose'),
   BaseSchema = require('./BaseSchema'),
-  connection = require('../db/connection')
+  connection = require('../db/connection'),
+  Status = require('../enums').Status,
+  Type = require('../enums').OrderType;
 
 
 const schemaObj = BaseSchema.getSchema(
@@ -24,26 +26,25 @@ const schemaObj = BaseSchema.getSchema(
     },
     type: {
       type: String,
-      enum: ['CARD_REQUEST', 'DELIVERY_ONLY'],
+      enum: [Type.CARD_REQUEST, Type.DELIVERY_ONLY],
       required: true
     },
     status: {
       type: String,
-      enum:['PENDING', 'SUCCESS', 'FAILED'],
+      enum:[Status.ORDER_CREATED, Status.IN_TRANSIT, Status.SUCCESS, Status.FAILED],
       required: true
     },
     paymentStatus: {
       type: String,
-      enum:['PENDING', 'SUCCESS', 'FAILED'],
-      required: true
-    },
-    deliveryStatus: {
-      type: String,
-      enum:['PENDING', 'SUCCESS', 'FAILED', 'IN_PROGRESS'],
-      required: true
+      enum:[Status.SUCCESS, Status.FAILED],
     },
     failureMessage: {
       type: String
+    },
+    cardCreationAttempts:{
+      type: Number,
+      required: false,
+      default: 0
     },
     cardId: {
       type: String

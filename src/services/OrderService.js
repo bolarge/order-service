@@ -7,7 +7,8 @@ const orderModel = require('../models/Order').Model,
   OrderType = require('../enums').OrderType,
   Status = require('../enums').Status,
   StatusMessages = require('../enums').StatusMessages,
-  orderService = require('../services/OrderService')
+  MAX_CARD_CREATION_ATTEMPTS = 2;
+
 
 module.exports.createOrder = async (body) => {
   const order = await orderModel.findOne({clientId: body.clientId, status: Status.PENDING})
@@ -21,23 +22,18 @@ module.exports.createOrder = async (body) => {
     name: body.name,
     deliveryId: body.deliveryId,
     country: body.country,
-    status: Status.PENDING,
-    deliveryStatus: Status.PENDING,
-    paymentStatus: Status.PENDING,
+    status: Status.ORDER_CREATED,
   }
 
-  if (body.type === OrderType.CARD_REQUEST) {
+  if (OrderType.CARD_REQUEST === body.type) {
     return orderModel.create({
       ...newOrder,
       type: OrderType.CARD_REQUEST,
-      cardCreationStatus: Status.PENDING,
     });
   }
   return orderModel.create({
     ...newOrder,
     type: OrderType.DELIVERY_ONLY,
-    paymentStatus: Status.PENDING,
-    pickedUp: false
   });
 }
 
@@ -46,6 +42,22 @@ module.exports.getOrder = async (id) => {
   if (!order) {
     console.error(`Order with id: ${id} not found`);
     throw new Error('Order not found')
+  }
+  if (OrderType.CARD_REQUEST === order.type && Status.SUCCESS === order.paymentStatus && !order.cardId) {
+    if (order.cardCreationAttempts < MAX_CARD_CREATION_ATTEMPTS) {
+      try {
+        const createCardResponse = await createCard();
+        return orderModel.findOneAndUpdate({_id: order._id}, {
+          cardId: createCardResponse.cardId,
+        }, {new: true})
+      } catch (err) {
+        console.error(`Server error occurred => ${JSON.stringify(err.error)}`)
+        return orderModel.findOneAndUpdate({_id: order._id}, {
+          status: Status.FAILED,
+          cardCreationAttempts: order.cardCreationAttempts + 1
+        }, {new: true})
+      }
+    }
   }
   return order;
 }
@@ -57,48 +69,41 @@ module.exports.updateOrderPaymentStatus = async (orderId, status) => {
     throw new Error('Order not found')
   }
 
-  let failureMessage;
-  let orderStatus = Status.PENDING;
-  let paymentStatus = status;
-  if (Status.SUCCESS !== status) {
-    orderStatus = Status.FAILED
-    failureMessage = StatusMessages.PAYMENT_FAILED;
-  } else {
+  if (order.paymentStatus) {
+    throw new Error('Payment status is already updated')
+  }
+
+  if (Status.SUCCESS === status) {
+    const paymentStatus = Status.SUCCESS;
+    const cardCreationAttempts = order.cardCreationAttempts + 1;
     if (OrderType.CARD_REQUEST === order.type) {
-      return createCard(order, status);
+      try {
+        const createCardResponse = await createCard(order);
+        return orderModel.findOneAndUpdate({_id: order._id}, {
+          paymentStatus,
+          cardCreationAttempts,
+          cardId: createCardResponse.cardId,
+        }, {new: true})
+      } catch (err) {
+        console.error(`Server error occurred => ${JSON.stringify(err.error)}`)
+        await orderModel.findOneAndUpdate({_id: order._id}, {
+          paymentStatus,
+          cardCreationAttempts,
+        })
+        throw new Error('Card Creation failed');
+      }
     }
+  } else {
+    return orderModel.findOneAndUpdate({_id: order._id}, {
+      paymentStatus: Status.FAILED,
+      status: Status.FAILED,
+      failureMessage: StatusMessages.PAYMENT_FAILED,
+    })
   }
-
-  return orderModel.findOneAndUpdate({_id: order._id}, {
-    status: orderStatus,
-    paymentStatus: paymentStatus,
-    failureMessage: failureMessage,
-  }, {new: true})
 }
 
-async function createCard(order, status) {
-  return cardService.handleCardCreation(order)
-    .then(result => {
-      return orderService.updateOrderWithCardInfo(result, order, status);
-    })
-    .catch((err) => {
-      console.error(`Server error occurred => ${JSON.stringify(err.error)}`)
-      return orderService.updateOrderWithCardInfo(err, order, status);
-    })
-}
-
-module.exports.updateOrderWithCardInfo = async (result, order, status) => {
-  const cardCreationStatus = result.cardId ? Status.SUCCESS : Status.FAILED;
-  let orderStatus = Status.PENDING
-  if (Status.FAILED === cardCreationStatus) {
-    orderStatus = Status.FAILED;
-  }
-  return orderModel.findOneAndUpdate({_id: order._id}, {
-    cardId: result.cardId,
-    cardCreationStatus: cardCreationStatus,
-    status: orderStatus,
-    paymentStatus: status
-  }, {new: true})
+async function createCard(order) {
+  return cardService.handleCardCreation(order);
 }
 
 module.exports.getOrderHistory = async (clientId) => {
