@@ -28,10 +28,13 @@ module.exports = {
     }
   },
   cardService: {
-    baseUrl: process.env.CARD_SERVICE_URL || 'https://cardservice-staging.getcarbon.co',
+    baseUrl: process.env.CARD_SERVICE_URL || 'http://localhost:4500',
     username: process.env.CARD_SERVICE_USERNAME || 'test',
     password: process.env.CARD_SERVICE_PASSWORD || 'test',
     cardType: process.env.CARD_TYPE || 'PHYSICAL',
+  },
+  deliveryService: {
+    baseUrl: process.env.DELIVERY_SERVICE_URL || 'http://localhost:3000',
   },
   countryConfig: {
     ng: {
