@@ -1,6 +1,6 @@
 /**
  * WayBill.js
- *
+ * Created by Bolaji on 08/06/2021
  */
 
 const mongoose = require('mongoose'),
@@ -11,9 +11,9 @@ const schemaObj = BaseSchema.getSchema(
   {
     clientId: {
       type: String, index: {unique: true}},
-    number: {
+    wayBillNumber: {
       type: String, required: true},
-    batch: {
+    wayBillBatch: {
       type: String, required: true}
   }
 );
@@ -21,6 +21,5 @@ const schemaObj = BaseSchema.getSchema(
 const WayBillSchema = new mongoose.Schema(schemaObj);
 
 WayBillSchema.set('toJSON', BaseSchema.transformToJSON);
-
 module.exports.Schema = WayBillSchema;
 module.exports.Model = connection.model('WayBill', WayBillSchema, 'waybill');
