@@ -15,7 +15,7 @@ module.exports.createOrder = async (body) => {
   const order = await orderModel.findOne({clientId: body.clientId, status: Status.ORDER_CREATED})
   const clientId = body.clientId;
   if (order) {
-    console.error(`Existing order exists for clientId, {id}`, clientId);
+    console.error('Existing order exists for clientId %s', clientId);
     throw new Error('Existing order in progress')
   }
   const newOrder = {
@@ -88,7 +88,7 @@ module.exports.updateOrderPaymentStatus = async (orderId, status) => {
           cardId: createCardResponse.cardId,
         }, {new: true})
       } catch (err) {
-        console.error(`Server error occurred => ${JSON.stringify(err.error)}`)
+        console.error(`Server error occurred => ${JSON.stringify(err.message)}`)
         await orderModel.findOneAndUpdate({_id: order._id}, {
           paymentStatus,
           cardCreationAttempts,
