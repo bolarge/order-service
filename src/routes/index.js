@@ -21,4 +21,7 @@ module.exports = function (app) {
   // WAYBILL ROUTES
   ///////////////////////////
   app.post('/v1/way-bills', wayBillController.createWayBill);
+  //app.post('/v1/way-bills/upload', wayBillController.uploadWayBillFile);
+  app.post('/v1/way-bills/upload', upload.single('file'), function (req, res) {
+  });
 }
