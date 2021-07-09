@@ -10,49 +10,47 @@ const mongoose = require('mongoose'),
   Type = require('../enums').OrderType;
 
 
-const schemaObj = BaseSchema.getSchema(
-  {
-    clientId: {
-      type: String, required: true
-    },
-    name: {
-      type: String, required: true
-    },
-    country: {
-      type: String, required: true
-    },
-    deliveryId: {
-      type: String, required: true
-    },
-    type: {
-      type: String,
-      enum: [Type.CARD_REQUEST, Type.DELIVERY_ONLY],
-      required: true
-    },
-    status: {
-      type: String,
-      enum:[Status.ORDER_CREATED, Status.IN_TRANSIT, Status.SUCCESS, Status.FAILED],
-      required: true
-    },
-    paymentStatus: {
-      type: String,
-      enum:[Status.SUCCESS, Status.FAILED],
-    },
-    failureMessage: {
-      type: String
-    },
-    cardCreationAttempts:{
-      type: Number,
-      required: false,
-      default: 0
-    },
-    cardId: {
-      type: String
-    }
+const schemaObj = {
+  clientId: {
+    type: String, required: true
+  },
+  name: {
+    type: String, required: true
+  },
+  country: {
+    type: String, required: true
+  },
+  deliveryId: {
+    type: String, required: true
+  },
+  type: {
+    type: String,
+    enum: [Type.CARD_REQUEST, Type.DELIVERY_ONLY],
+    required: true
+  },
+  status: {
+    type: String,
+    enum: [Status.ORDER_CREATED, Status.IN_TRANSIT, Status.SUCCESS, Status.FAILED],
+    required: true
+  },
+  paymentStatus: {
+    type: String,
+    enum: [Status.SUCCESS, Status.FAILED],
+  },
+  failureMessage: {
+    type: String
+  },
+  cardCreationAttempts: {
+    type: Number,
+    required: false,
+    default: 0
+  },
+  cardId: {
+    type: String
   }
-);
+}
 
-const orderSchema = new mongoose.Schema(schemaObj);
+const orderSchema = new mongoose.Schema(schemaObj, BaseSchema.baseSchemaConfig);
 
 orderSchema.set('toJSON', BaseSchema.transformToJSON);
 
