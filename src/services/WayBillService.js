@@ -25,4 +25,6 @@ module.exports.createWayBill = async (body) => {
   }
 }
 
+//Get WayBills
 
+//Find a WayBill
