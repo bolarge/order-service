@@ -1,40 +1,43 @@
+/**
+ * Created by Bolaji on 08/06/2021.
+ *
+ */
+
 const util = require("util");
 const multer = require('multer');
-const csv = require('csvtojson')
-const app = require("../../app");
+//const csv = require('csvtojson')
 const wayBillModel = require('../models/WayBill').Model
 
 const dir = './src/uploads/';
 
 // -> Multer Upload Storage
-const storage = multer.diskStorage({
+let storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, dir)
+    cb(null, dir);
   },
   filename: (req, file, cb) => {
-    cb(null, file.fieldname + "-" + Date.now() + "-" + file.originalname)
+    const fileName = file.originalname.toLowerCase().split(' ').join('-');
+    cb(null, fileName)
+  },
+});
+
+let upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 1024 * 1024 * 5
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === "text/plain" || file.mimetype === "text/csv" || file.mimetype === "ext/csv") {
+      cb(null, true);
+    } else {
+      cb(null, false);
+      return cb(new Error('File types allowed is csv only!'));
+    }
   }
-});
+}).single("csv");
 
-const uploads = multer({storage: storage});
+let fileUploadMiddleware = util.promisify(upload);
 
-app.post('/v1/waybills/upload', uploads.single('csv'),(req,res)=>{
-  //convert csvfile to jsonArray
-  csv()
-    .fromFile(req.file.path)
-    .then((jsonObj)=>{
-      console.log(jsonObj);
-      // Insert Json-Object to MongoDB
-      wayBillModel.insertMany(jsonObj,(err,data)=>{
-        if(err){
-          console.log(err);
-        }else{
-          res.redirect('/');
-        }
-      });
-    });
-});
+module.exports = fileUploadMiddleware;
 
-let uploadMiddleware = util.promisify(uploads.single);
 
-module.exports = uploadMiddleware;
