@@ -47,6 +47,7 @@ module.exports.createOrder = async (body) => {
       ...newOrder,
       cardCreationAttempts,
       type: OrderType.CARD_REQUEST,
+      status: Status.ORDER_CREATED,
       cardId: createCardResponse.cardId,
     });
   } catch (err) {
