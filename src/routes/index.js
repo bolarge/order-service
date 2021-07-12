@@ -16,6 +16,7 @@ module.exports = function (app) {
   app.get('/v1/orders/:orderId', orderController.getOrder);
   app.put('/v1/orders/:orderId/payment', orderController.updateOrderPaymentStatus);
   app.get('/v1/orders/history/:clientId', orderController.getOrderHistory)
+  app.get('/v1/orders/delivery/:cardId', orderController.getCardDeliveryInformation)
 
   ///////////////////////////
   // WAYBILL ROUTES

@@ -1,19 +1,6 @@
-const baseSchema = {
-  createdAt: {
-    type: Date,
-    default: Date.now()
-  },
-
-  updatedAt: {
-    type: Date,
-    default: Date.now()
-  },
-};
-
-module.exports.getSchema = (objectSchema) => {
-  const copy = Object.assign({}, objectSchema || {});
-  return Object.assign(copy, baseSchema);
-};
+module.exports.baseSchemaConfig = {
+  timestamps: true
+}
 
 module.exports.transformToJSON = {
   transform: function (doc, ret, opt) {

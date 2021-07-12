@@ -49,5 +49,15 @@ module.exports = {
         return res.status(400).json(new ServiceResponse(false, err.message, null, [err]))
       });
   },
-}
 
+  getCardDeliveryInformation: function (req, res) {
+    const cardId = req.params.cardId;
+    return orderService.getDeliveryInformation(cardId)
+      .then((result) => {
+        return res.status(200).json(new ServiceResponse(true, 'Retrieved card delivery information successfully', result))
+      })
+      .catch((err) => {
+        return res.status(400).json(new ServiceResponse(false, err.message, null, [err]))
+      });
+  },
+}

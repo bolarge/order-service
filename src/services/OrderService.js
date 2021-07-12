@@ -4,6 +4,7 @@
 
 const orderModel = require('../models/Order').Model,
   cardService = require('../services/CardService'),
+  deliveryService = require('../services/DeliveryService'),
   OrderType = require('../enums').OrderType,
   Status = require('../enums').Status,
   StatusMessages = require('../enums').StatusMessages,
@@ -14,7 +15,7 @@ module.exports.createOrder = async (body) => {
   const order = await orderModel.findOne({clientId: body.clientId, status: Status.ORDER_CREATED})
   const clientId = body.clientId;
   if (order) {
-    console.error(`Existing order exists for clientId, {id}`, clientId);
+    console.error('Existing order exists for clientId %s', clientId);
     throw new Error('Existing order in progress')
   }
   const newOrder = {
@@ -87,7 +88,7 @@ module.exports.updateOrderPaymentStatus = async (orderId, status) => {
           cardId: createCardResponse.cardId,
         }, {new: true})
       } catch (err) {
-        console.error(`Server error occurred => ${JSON.stringify(err.error)}`)
+        console.error(`Server error occurred => ${JSON.stringify(err.message)}`)
         await orderModel.findOneAndUpdate({_id: order._id}, {
           paymentStatus,
           cardCreationAttempts,
@@ -115,4 +116,21 @@ module.exports.getOrderHistory = async (clientId) => {
     throw new Error('No orders found')
   }
   return orders;
+}
+
+module.exports.getDeliveryInformation = async (cardId) => {
+  const order = await orderModel.findOne({cardId: cardId}).sort('-createdAt')
+  if (!order) {
+    console.error(`No order exists for cardId, {}`, cardId);
+    throw new Error('No orders found')
+  }
+
+  const deliveryServiceResponse = await deliveryService.getDeliveryInfo(order.deliveryId);
+  const {clientId, name, deliveryId, country, status, paymentStatus, failureMessage} = order
+  return {
+    clientId, name, deliveryId, country, status, paymentStatus, failureMessage, cardId,
+    id: order._id,
+    deliveryAddress: deliveryServiceResponse.deliveryAddress,
+    estimatedDeliveryDates: deliveryServiceResponse.estimates.deliveryDates
+  }
 }

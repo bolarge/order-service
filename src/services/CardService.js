@@ -14,7 +14,8 @@ const request = require('request-promise-native'),
  * @param headers {object | null}
  */
 const makeRequest = (path, method, countryCode, body = true, qs = null, headers = {}) => {
-  console.log("making request to ", path)
+  console.log(`making request to ${cardServiceConfig.baseUrl}${path}`)
+
   const options = {
     url: `${cardServiceConfig.baseUrl}${path}`,
     method,
@@ -61,8 +62,7 @@ const createCard = (order, countryConfig, reservationResponse) => {
     currency: countryConfig.currencyCode
   };
 
-  // TODO: remove log
-  console.log(createCardRequest);
+
   return makeRequest(`/cardholders/${createCardRequest.cardHolder.id}/cards`,
     "POST", createCardRequest.country, createCardRequest);
 };
