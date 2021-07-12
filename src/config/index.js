@@ -38,8 +38,8 @@ module.exports = {
   },
   paylaterService: {
     baseUrl: process.env.PAYLATER_SERVICE_URL || 'http://api.staging.paylater.ng',
-    username: process.env.CARD_SERVICE_USERNAME || 'user',
-    password: process.env.CARD_SERVICE_PASSWORD || 'pass',
+    username: process.env.PAYLATER_SERVICE_USERNAME || 'user',
+    password: process.env.PAYLATER_SERVICE_PASSWORD || 'pass',
     xAppVersion: '6.5.0'
   },
   countryConfig: {
