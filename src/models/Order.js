@@ -17,6 +17,9 @@ const schemaObj = {
   name: {
     type: String, required: true
   },
+  externalReference: {
+    type: String, required: true
+  },
   country: {
     type: String, required: true
   },
@@ -32,10 +35,6 @@ const schemaObj = {
     type: String,
     enum: [Status.ORDER_CREATED, Status.IN_TRANSIT, Status.SUCCESS, Status.FAILED],
     required: true
-  },
-  paymentStatus: {
-    type: String,
-    enum: [Status.SUCCESS, Status.FAILED],
   },
   failureMessage: {
     type: String
