@@ -8,9 +8,6 @@ const mongoose = require('mongoose'),
   connection = require('../db/connection')
 
 const schemaObj = {
-  batchId: {
-    type: String, required: true, index: {unique: true}
-  },
   fileHash: {
     type: String, required: true, index: {unique: true}
   },
@@ -22,9 +19,9 @@ const schemaObj = {
   },
 }
 
-const WayBillSchema = new mongoose.Schema(schemaObj, BaseSchema.baseSchemaConfig);
+const BatchSchema = new mongoose.Schema(schemaObj, BaseSchema.baseSchemaConfig);
 
-WayBillSchema.set('toJSON', BaseSchema.transformToJSON);
-module.exports.Schema = WayBillSchema;
-module.exports.Model = connection.model('Batch', WayBillSchema, 'batch');
+BatchSchema.set('toJSON', BaseSchema.transformToJSON);
+module.exports.Schema = BatchSchema;
+module.exports.Model = connection.model('Batch', BatchSchema, 'batch');
 
