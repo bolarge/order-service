@@ -44,6 +44,9 @@ module.exports.uploadBatchFile = async (file) => {
               status: Status.ORDER_CREATED, waybillNumber: null
             }).sort('-createdAt');
 
+            if (!order) {
+              return;
+            }
             await orderModel.findByIdAndUpdate(order._id, {
               status: Status.IN_TRANSIT,
               wayBillNumber: data['Waybill Number']
@@ -60,8 +63,9 @@ module.exports.uploadBatchFile = async (file) => {
         console.log('Done parsing batch information')
       })
 
-    await messagingMiddleware.sendBulkPush(bulkRequest);
-
+    if (bulkRequest.length) {
+       messagingMiddleware.sendBulkPush(bulkRequest);
+    }
     return batchModel.create({
       fileHash,
       fileName,
