@@ -17,7 +17,7 @@ module.exports.uploadBatchFile = async (file) => {
 
   const fileHash = Utils.computeCheckSum(file);
   const dateNow = Date.now();
-  const batch = batchModel.findOne({fileHash: fileHash});
+  const batch = await batchModel.findOne({fileHash: fileHash});
   if (batch) {
     console.error('File batch already exists ', dateNow);
     throw new Error('Batch already exists')
@@ -32,48 +32,48 @@ module.exports.uploadBatchFile = async (file) => {
   const fileName = dateNow + '_' + Utils.generateRandomString();
   let batchSize = 0;
   let bulkRequest = [];
+  const fileAsString = String.fromCharCode.apply(null, file);
   try {
-    csvToJson().fromString(file.toString('utf8'))
-      .on('json', (fileData) => {
-        batchSize = fileData.length;
-        if (fileData.length) {
-          fileData.forEach(async data => {
-            let clientId = data['Client ID'];
-            let order = await orderModel.findOne({
-              clientId: clientId,
-              status: Status.ORDER_CREATED, waybillNumber: null
-            }).sort('-createdAt');
+    const fileArray = await csvToJson().fromString(fileAsString);
+    batchSize = fileArray.length;
 
-            if (!order) {
-              return;
-            }
-            await orderModel.findByIdAndUpdate(order._id, {
-              status: Status.IN_TRANSIT,
-              wayBillNumber: data['Waybill Number']
-            });
-
-            const bulkData = {clientId: clientId, messageKey: PushMessageKeys.CARD_ORDER_IN_TRANSIT,
-              vars: {earliestTime: deliveryConfig.earliestTime, latestTime: deliveryConfig.latestTime}};
-
-            bulkRequest.push(bulkData);
-          })
-        }
+    for (let i = 0; i < fileArray.length; i++) {
+      let clientId = fileArray[i]['Client ID'];
+      let order = await orderModel.findOne({
+        clientId: clientId,
+        status: Status.ORDER_CREATED,
+        waybillNumber: null
       })
-      .on('done', () => {
-        console.log('Done parsing batch information')
-      })
+        .sort('-createdAt');
+
+      if (!order) {
+        return;
+      }
+      await orderModel.findByIdAndUpdate(order._id, {
+        status: Status.IN_TRANSIT,
+        wayBillNumber: fileArray[i]['Waybill Number']
+      });
+
+      const bulkData = {
+        clientId: clientId, messageKey: PushMessageKeys.CARD_ORDER_IN_TRANSIT,
+        vars: {earliestTime: deliveryConfig.earliestTime, latestTime: deliveryConfig.latestTime}
+      };
+
+      bulkRequest.push(bulkData);
+    }
+
+    console.log('Done parsing batch information')
 
     if (bulkRequest.length) {
-       messagingMiddleware.sendBulkPush(bulkRequest);
+      messagingMiddleware.sendBulkPush(bulkRequest);
     }
     return batchModel.create({
       fileHash,
       fileName,
       size: batchSize
     });
-
   } catch (err) {
-    console.log('Error occurred while processing batch on date: ', new Date(Date.now()))
+    console.log('Error occurred while processing batch on date: ', new Date(Date.now()), err.message)
     throw new Error('Error while processing batch');
   }
 

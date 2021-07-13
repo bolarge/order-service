@@ -13,7 +13,7 @@ const MAX_CARD_CREATION_ATTEMPTS = 2;
 
 
 module.exports.createOrder = async (body) => {
-  const order = await orderModel.findOne({clientId: body.clientId, status: Status.ORDER_CREATED})
+  const order = await orderModel.findOne({clientId: body.clientId, status: Status.ORDER_CREATED});
   const clientId = body.clientId;
   if (order) {
     console.error('Existing order exists for clientId %s', clientId);

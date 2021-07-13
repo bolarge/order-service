@@ -3,6 +3,9 @@ const request = require("request-promise-native");
 const countryConfig = require("../config").countryConfig;
 
 const makeRequest = (path, method, body, qs, headers = {}) => {
+
+  console.log(`making request to ${messagingMiddlewareConfig.baseUrl}${path}`)
+
   const options = {
     url: messagingMiddlewareConfig.baseUrl + path,
     method,
@@ -17,5 +20,5 @@ const makeRequest = (path, method, body, qs, headers = {}) => {
 module.exports.sendBulkPush = async (bulkRequest) => {
   return makeRequest('/bulk-push', 'POST',
     {bulkRequest: bulkRequest},
-    null, {'X-Entity': countryConfig.ng.code, 'X-Locale-Lang': user.language || null});
+    null, {'X-Entity': countryConfig.ng.code, 'X-Locale-Lang': null});
 };
