@@ -1,5 +1,5 @@
 /**
- * WayBill.js
+ * Batch.js
  * Created by Bolaji on 08/06/2021
  */
 
@@ -8,20 +8,23 @@ const mongoose = require('mongoose'),
   connection = require('../db/connection')
 
 const schemaObj = {
-  clientId: {
-    type: String, index: {unique: true}
+  batchId: {
+    type: String, required: true, index: {unique: true}
   },
-  wayBillNumber: {
-    type: String, index: {unique: true}
+  fileHash: {
+    type: String, required: true, index: {unique: true}
   },
-  wayBillBatch: {
-    type: String, required: true
-  }
+  fileName: {
+    type: String, required: true, index: {unique: true}
+  },
+  size: {
+    type: Number
+  },
 }
 
 const WayBillSchema = new mongoose.Schema(schemaObj, BaseSchema.baseSchemaConfig);
 
 WayBillSchema.set('toJSON', BaseSchema.transformToJSON);
 module.exports.Schema = WayBillSchema;
-module.exports.Model = connection.model('WayBill', WayBillSchema, 'waybill');
+module.exports.Model = connection.model('Batch', WayBillSchema, 'batch');
 

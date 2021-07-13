@@ -1,6 +1,6 @@
 const orderController = require('../controllers/OrderController'),
   healthController = require('../controllers/HealthController'),
-  wayBillController = require('../controllers/WayBillController')
+  wayBillController = require('../controllers/BatchController')
 
 module.exports = function (app) {
 
@@ -22,6 +22,5 @@ module.exports = function (app) {
   ///////////////////////////
   // WAYBILL ROUTES
   ///////////////////////////
-  app.post('/v1/waybills', wayBillController.createWayBill);
-  app.post('/v1/waybills/upload', wayBillController.uploadWayBill);
+  app.post('/v1/batch/upload', wayBillController.uploadBatchFile);
 }

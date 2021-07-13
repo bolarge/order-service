@@ -42,6 +42,13 @@ module.exports = {
     password: process.env.PAYLATER_SERVICE_PASSWORD || 'pass',
     xAppVersion: process.env.PAYLATER_X_APP_VERSION || '6.5.0'
   },
+  delivery: {
+    earliestTime: process.env.DELIVERY_EARLIEST_TIME || 2,
+    latestTime: process.env.DELIVERY_LATEST_TIME || 4,
+  },
+  messagingMiddleware: {
+    baseUrl: process.env.MESSAGING_MIDDLEWARE_SERVICE_URL || 'https://edoo7n1hs7.execute-api.us-west-2.amazonaws.com/staging',
+  },
   countryConfig: {
     ng: {
       currencyCode: "NGN",

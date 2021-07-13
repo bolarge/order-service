@@ -2,14 +2,14 @@
  * Created by oghenerukevwe on 15/06/2021.
  */
 
-const orderModel = require('../models/Order').Model,
-  cardService = require('../services/CardService'),
-  deliveryService = require('../services/DeliveryService'),
-  paylaterService = require('../services/PaylaterService'),
-  OrderType = require('../enums').OrderType,
-  Status = require('../enums').Status,
-  StatusMessages = require('../enums').StatusMessages,
-  MAX_CARD_CREATION_ATTEMPTS = 2;
+const orderModel = require('../models/Order').Model;
+const cardService = require('../services/CardService');
+const deliveryService = require('../services/DeliveryService');
+const paylaterService = require('../services/PaylaterService');
+const OrderType = require('../enums').OrderType;
+const Status = require('../enums').Status;
+const StatusMessages = require('../enums').StatusMessages;
+const MAX_CARD_CREATION_ATTEMPTS = 2;
 
 
 module.exports.createOrder = async (body) => {
