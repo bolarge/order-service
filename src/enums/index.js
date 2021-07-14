@@ -15,3 +15,7 @@ module.exports.StatusMessages = {
   DELIVERY_FAILED: 'Failed to deliver card',
 }
 
+module.exports.PushMessageKeys = {
+  CARD_ORDER_IN_TRANSIT: 'CARD_ORDER_IN_TRANSIT',
+}
+

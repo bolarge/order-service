@@ -1,5 +1,6 @@
 const orderController = require('../controllers/OrderController'),
-  healthController = require('../controllers/HealthController')
+  healthController = require('../controllers/HealthController'),
+  batchController = require('../controllers/BatchController')
 
 module.exports = function (app) {
 
@@ -17,4 +18,9 @@ module.exports = function (app) {
   app.get('/v1/orders/delivery/:cardId', orderController.getCardDeliveryInformation)
   app.get('/v1/orders/external-ref/:externalReference', orderController.getOrderByExternalReference)
 
+
+  ///////////////////////////
+  // WAYBILL ROUTES
+  ///////////////////////////
+  app.post('/v1/batch/upload', batchController.uploadBatchFile);
 }

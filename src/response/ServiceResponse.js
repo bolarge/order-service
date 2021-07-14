@@ -3,7 +3,7 @@ module.exports = class ServiceResponse {
 
    * @param {Boolean} success
    * @param {String} message
-   * @param {{orderId: *, status: *}} data
+   * @param {Object} data
    * @param { []} errors
    */
 

@@ -1,5 +1,5 @@
-const deliveryServiceConfig = require("../config").deliveryService,
-  request = require("request-promise-native");
+const deliveryServiceConfig = require("../config").deliveryService
+const request = require("request-promise-native");
 
 const makeRequest = (path, method, countryCode, body = true, qs = null, headers = {}) => {
   console.log(`making request to ${deliveryServiceConfig.baseUrl}${path}`)
