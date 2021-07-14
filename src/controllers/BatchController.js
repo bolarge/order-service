@@ -7,8 +7,8 @@ const ServiceResponse = require('../response/ServiceResponse');
 
 module.exports = {
   uploadBatchFile: async (req, res) => {
-    const {body: {file}} = req;
-    return batchService.uploadBatchFile(file)
+    const {body: {file, fileName}} = req;
+    return batchService.uploadBatchFile(file, fileName)
       .then((result) => {
         return res.status(200).json(new ServiceResponse(true, 'Batch file uploaded successfully', result))
       })
