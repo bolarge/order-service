@@ -47,6 +47,10 @@ const schemaObj = {
   },
   cardId: {
     type: String
+  },
+  waybillNumber: {
+    type: String,
+    required: false
   }
 }
 

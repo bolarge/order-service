@@ -1,4 +1,5 @@
 const orderService = require('../services/OrderService');
+const deliveryService = require('../services/DeliveryService');
 const ServiceResponse = require('../response/ServiceResponse')
 
 module.exports = {
@@ -53,6 +54,17 @@ module.exports = {
   getCardDeliveryInformation: function (req, res) {
     const cardId = req.params.cardId;
     return orderService.getDeliveryInformation(cardId)
+      .then((result) => {
+        return res.status(200).json(new ServiceResponse(true, 'Retrieved card delivery information successfully', result))
+      })
+      .catch((err) => {
+        return res.status(400).json(new ServiceResponse(false, err.message, null, [err]))
+      });
+  },
+
+  getTest: function (req, res) {
+    const cardId = req.params.cardId;
+    return deliveryService.updateDeliveryStatus()
       .then((result) => {
         return res.status(200).json(new ServiceResponse(true, 'Retrieved card delivery information successfully', result))
       })
