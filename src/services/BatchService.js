@@ -9,7 +9,7 @@ const Utils = require('../utils');
 const csvToJson = require('csvtojson');
 const Status = require('../enums').Status;
 const PushMessageKeys = require('../enums').PushMessageKeys;
-const messagingMiddleware = require('../services/MessagingMiddleware');
+const messagingService = require('./MessagingService');
 const deliveryConfig = require('../config').delivery;
 
 
@@ -65,7 +65,7 @@ module.exports.uploadBatchFile = async (file) => {
     console.log('Done parsing batch information')
 
     if (bulkRequest.length) {
-      messagingMiddleware.sendBulkPush(bulkRequest);
+      messagingService.sendBulkPush(bulkRequest);
     }
     return batchModel.create({
       fileHash,

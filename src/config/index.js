@@ -46,8 +46,19 @@ module.exports = {
     earliestTime: process.env.DELIVERY_EARLIEST_TIME || 2,
     latestTime: process.env.DELIVERY_LATEST_TIME || 4,
   },
-  messagingMiddleware: {
-    baseUrl: process.env.MESSAGING_MIDDLEWARE_SERVICE_URL || 'https://edoo7n1hs7.execute-api.us-west-2.amazonaws.com/staging',
+  messagingService: {
+    baseUrl: process.env.MESSAGING_SERVICE_URL || 'https://edoo7n1hs7.execute-api.us-west-2.amazonaws.com/staging',
+  },
+  batchConfig: {
+    senderEmails: process.env.SENDER_EMAILS || 'customer@getcarbon.co',
+    recipientEmails: process.env.RECIPIENT_EMAILS || ['oahwin@getcarbon.co'],
+    emailSubject: process.env.EMAIL_SUBJECT || 'ORDER DELIVERY BATCH',
+    templateName: process.env.TEMPLATE_NAME || 'batch-delivery',
+  },
+  s3Service: {
+    bucketName: process.env.S3_BUCKET_NAME || 'card-batch-delivery',
+    accessKey: process.env.S3_ACCESS_KEY,
+    secret: process.env.S3_SECRET
   },
   countryConfig: {
     ng: {
