@@ -1,5 +1,5 @@
-const paylaterServiceConfig = require("../config").paylaterService,
-  request = require("request-promise-native");
+const paylaterServiceConfig = require("../config").paylaterService;
+const request = require("request-promise-native");
 
 const makeRequest = (path, method, countryCode, body = true, qs = null, headers = {}) => {
   console.log(`making request to ${paylaterServiceConfig.baseUrl}${path}`)
