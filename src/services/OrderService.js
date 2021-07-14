@@ -31,7 +31,7 @@ module.exports.createOrder = async (body) => {
 
   const lastFailedOrder = await orderModel.findOne({clientId: body.clientId, status: Status.FAILED}).sort('-createdAt')
 
-  if (lastFailedOrder.cardId) {
+  if (lastFailedOrder && lastFailedOrder.cardId) {
     return orderModel.create({
       ...newOrder,
       status: Status.ORDER_CREATED,
@@ -40,9 +40,9 @@ module.exports.createOrder = async (body) => {
     });
   }
 
-  const cardCreationAttempts = order.cardCreationAttempts + 1;
+  const cardCreationAttempts = 1;
   try {
-    const createCardResponse = await createCard();
+    const createCardResponse = await createCard(newOrder);
     return orderModel.create({
       ...newOrder,
       cardCreationAttempts,
