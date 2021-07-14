@@ -20,7 +20,7 @@ const makeRequest = (path, method, countryCode, body = true, qs = null, headers 
     }
   };
   return request(options)
-    .then(resp => resp.data);
+    .then(resp => resp.response.data);
 };
 
 module.exports.getCustomerDetailsByClientId = async (clientId) => {
