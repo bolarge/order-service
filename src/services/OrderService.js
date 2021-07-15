@@ -113,3 +113,12 @@ module.exports.getDeliveryInformation = async (cardId) => {
     estimatedDeliveryDates: deliveryServiceResponse.estimates.deliveryDates
   }
 }
+
+module.exports.getRescheduleForDeliveryOnly = async () => {
+  const orders = await orderModel.find({status: Status.FAILED, type: OrderType.DELIVERY_ONLY})
+  if(!orders){
+    console.log('No failed delivery order at this time');
+  }
+  return orders;
+}
+
