@@ -13,6 +13,11 @@ module.exports.OrderType = {
 module.exports.StatusMessages = {
   CARD_CREATION_FAILED: 'Failed to create card',
   DELIVERY_FAILED: 'Failed to deliver card',
-  PAYMENT_FAILED: 'Order payment failed'
+}
+
+module.exports.PushMessageKeys = {
+  CARD_ORDER_IN_TRANSIT: 'CARD_ORDER_IN_TRANSIT',
+  CARD_DELIVERY_SUCCESSFUL: 'CARD_DELIVERY_SUCCESSFUL',
+  CARD_DELIVERY_FAILED: 'CARD_DELIVERY_FAILED',
 }
 

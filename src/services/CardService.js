@@ -1,8 +1,8 @@
-const request = require('request-promise-native'),
-  cardServiceConfig = require('../config').cardService,
-  Utils = require('../utils'),
-  CARD_CREATION_RESERVATION_TYPE = 'CARD_CREATION',
-  CARD_CLASSIFICATION_TYPE = 'DEBIT'
+const request = require('request-promise-native');
+const cardServiceConfig = require('../config').cardService;
+const Utils = require('../utils')
+const CARD_CREATION_RESERVATION_TYPE = 'CARD_CREATION';
+const CARD_CLASSIFICATION_TYPE = 'DEBIT';
 
 
 /**

@@ -1,6 +1,8 @@
 const deliveryServiceConfig = require("../config").deliveryService,
   Order = require('../models/Order').Model,
   Status = require('../enums').Status,
+  PushMessageKeys = require('../enums').PushMessageKeys,
+  messagingMiddleware = require('../services/MessagingMiddleware'),
   request = require("request-promise-native");
 
 const makeRequest = (path, method, countryCode, body = true, qs = null, headers = {}) => {
@@ -29,10 +31,10 @@ module.exports.updateDeliveryStatus = async () => {
     let currentCount = 0;
 
     for (let i = 0; i < pendingOrders.length; i++) {
-      tempBatch.push(pendingOrders[i].waybillNumber);
+      tempBatch.push(pendingOrders[i].wayBillNumber);
       currentCount++;
 
-      if(currentCount === parseInt(batchMaxCount) || i === pendingOrders.length - 1){
+      if (currentCount === parseInt(batchMaxCount) || i === pendingOrders.length - 1) {
         batches.push(tempBatch);
         currentCount = 0;
         tempBatch = [];
@@ -40,9 +42,13 @@ module.exports.updateDeliveryStatus = async () => {
 
     }
 
-    for(let i = 0 ; i < batches.length ; i++){
-      let batchUpdatedStatus = await getStatusForBatch(batches[i]);
-      await processBatchUpdate(batchUpdatedStatus);
+    for (let i = 0; i < batches.length; i++) {
+      try {
+        let batchUpdatedStatus = await getStatusForBatch(batches[i]);
+        await processBatchUpdate(batchUpdatedStatus);
+      } catch (err) {
+        console.log(`error while getting delivery status for waybill numbers ${batches[i]} - ${err}`);
+      }
     }
 
     return batches;
@@ -56,12 +62,36 @@ const getStatusForBatch = async (batch) => {
 
 const processBatchUpdate = async (batchUpdatedStatus) => {
   const terminalStatus = [Status.SUCCESS, Status.FAILED];
-  for(let i = 0 ; i < batchUpdatedStatus.length ; i++){
-    let status = batchUpdatedStatus[i].shipmentStatus;
-    if(terminalStatus.includes(status)){
-      let updatedOrder = await Order.findOneAndUpdate({waybillNumber: batchUpdatedStatus[i].waybillNumber}, {
-        status: status
-      });
+  let pushMessages = [];
+
+  for (let i = 0; i < batchUpdatedStatus.length; i++) {
+    try {
+      let status = batchUpdatedStatus[i].shipmentStatus;
+      if (terminalStatus.includes(status)) {
+        let updatedOrder = await Order.findOneAndUpdate({wayBillNumber: batchUpdatedStatus[i].waybillNumber}, {
+          status: status
+        });
+
+        const messageKey = (status === Status.SUCCESS) ? PushMessageKeys.CARD_DELIVERY_SUCCESSFUL : PushMessageKeys.CARD_DELIVERY_FAILED;
+
+        const pushMessage = {
+          clientId: updatedOrder.clientId, messageKey: messageKey,
+          vars: {}
+        };
+
+        pushMessages.push(pushMessage);
+      }
+    } catch (err) {
+      console.log(`error updating delivery status : ${err}`);
     }
+  }
+
+  try {
+    if(pushMessages.length > 0){
+      messagingMiddleware.sendBulkPush(pushMessages);
+    }
+
+  } catch (err) {
+    console.log(`error sending push messages ${pushMessages} - ${err}`)
   }
 };
