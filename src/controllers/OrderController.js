@@ -1,6 +1,5 @@
 const orderService = require('../services/OrderService');
-const deliveryService = require('../services/DeliveryService');
-const ServiceResponse = require('../response/ServiceResponse')
+const ServiceResponse = require('../response/ServiceResponse');
 
 module.exports = {
 

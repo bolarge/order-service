@@ -34,7 +34,7 @@ module.exports = {
     cardType: process.env.CARD_TYPE || 'PHYSICAL',
   },
   deliveryService: {
-    baseUrl: process.env.DELIVERY_SERVICE_URL || 'http://localhost:3000',
+    baseUrl: process.env.DELIVERY_SERVICE_URL || 'http://delivery-service.staging.getcarbon.co',
     batchStatusUpdateMaxCount: process.env.BATCH_STATUS_UPDATE_MAX_CONT || 100,
     deliveryUpdateSchedule: process.env.DELIVERY_UPDATE_SCHEDULE,
   },
