@@ -9,7 +9,11 @@ const paylaterService = require('../services/PaylaterService');
 const OrderType = require('../enums').OrderType;
 const Status = require('../enums').Status;
 const StatusMessages = require('../enums').StatusMessages;
-const MAX_CARD_CREATION_ATTEMPTS = 2;
+const csvService = require('../services/CsvService');
+const fs = require('fs').promises;
+const batchConfig = require('../config').batchConfig;
+const messagingService = require('./MessagingService');
+const s3Service = require('./S3Service')
 
 
 module.exports.createOrder = async (body) => {
@@ -27,6 +31,10 @@ module.exports.createOrder = async (body) => {
     deliveryId: body.deliveryId,
     country: customerDetails.country,
     externalReference: body.internalRef
+  }
+
+  async function createCard(order) {
+    return cardService.handleCardCreation(order);
   }
 
   const lastFailedOrder = await orderModel.findOne({clientId: body.clientId, status: Status.FAILED}).sort('-createdAt')
@@ -84,10 +92,6 @@ module.exports.getOrderByExternalReference = async (externalReference) => {
 }
 
 
-async function createCard(order) {
-  return cardService.handleCardCreation(order);
-}
-
 module.exports.getOrderHistory = async (clientId) => {
   const orders = await orderModel.find({clientId: clientId}).sort('-createdAt')
   if (!orders.length) {
@@ -112,6 +116,29 @@ module.exports.getDeliveryInformation = async (cardId) => {
     deliveryAddress: deliveryServiceResponse.deliveryAddress,
     estimatedDeliveryDates: deliveryServiceResponse.estimates.deliveryDates
   }
+}
+
+module.exports.handleBatchedCustomerInformation = async (body) => {
+  const {data} = body;
+  if (!data.length) {
+    return;
+  }
+  const fileName = await csvService.generateBatchCsv(data);
+  const fileAsBase64String = await fs.readFile(__dirname + `/${fileName}`, {encoding: 'base64'});
+
+  const sender = batchConfig.senderEmails;
+  const subject = batchConfig.emailSubject;
+  const recipientEmails = batchConfig.recipientEmails.map((email, index) => {
+    return (index == 0) ? { email }: {email, type: "cc"};
+  });
+  const templateName = batchConfig.templateName;
+  const tags = ['order-service', 'batch-delivery']
+  const globalmergeVars = [{name: "batchDate", content: Date.now()}];
+
+  await messagingService.sendTemplateEmail(subject, sender, recipientEmails, templateName, tags, globalmergeVars,
+    fileAsBase64String, fileName);
+
+  await s3Service.uploadFile(fileName);
 }
 
 module.exports.getRescheduleForDeliveryOnly = async () => {

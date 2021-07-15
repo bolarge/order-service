@@ -9,7 +9,7 @@ const Utils = require('../utils');
 const csvToJson = require('csvtojson');
 const Status = require('../enums').Status;
 const PushMessageKeys = require('../enums').PushMessageKeys;
-const messagingMiddleware = require('../services/MessagingMiddleware');
+const messagingService = require('./MessagingService');
 const deliveryConfig = require('../config').delivery;
 
 
@@ -67,8 +67,8 @@ module.exports.uploadBatchFile = async (fileAsBase64String, uploadFileName) => {
     console.log('Done parsing batch information')
 
     if (bulkRequest.length) {
-      messagingMiddleware.sendBulkPush(bulkRequest);
-    } else {
+      messagingService.sendBulkPush(bulkRequest);
+    }else {
       throw new Error("Unable to update order status. Check that clientIds are valid.")
     }
     return batchModel.create({

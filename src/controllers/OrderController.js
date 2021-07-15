@@ -57,4 +57,17 @@ module.exports = {
         return res.status(400).json(new ServiceResponse(false, err.message, null, [err]))
       });
   },
+
+  handleBatchedCustomerInformation: function (req, res) {
+    const {body} = req
+    return orderService.handleBatchedCustomerInformation(body)
+      .then((result) => {
+        return res.status(200).json(new ServiceResponse(true, 'Batch Customer Information parsed successfully'))
+      })
+      .catch((err) => {
+        return res.status(500).json(new ServiceResponse(false, err.message, null, [err]))
+      });
+  },
 }
+
+

@@ -1,9 +1,9 @@
-const config = require('../config'),
-  md5 = require('blueimp-md5')
+const config = require('../config');
+const md5 = require('blueimp-md5');
 
 module.exports = {
   getCountryConfig: function (countryCode) {
-    return config.countryConfig[countryCode.toLowerCase()]
+    return config.countryConfig[countryCode.toLowerCase()];
   },
 
   convertByTeArrayToHexString: function (byteArray) {
