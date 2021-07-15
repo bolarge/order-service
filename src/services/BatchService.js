@@ -13,10 +13,10 @@ const messagingService = require('./MessagingService');
 const deliveryConfig = require('../config').delivery;
 
 
-module.exports.uploadBatchFile = async (file) => {
+module.exports.uploadBatchFile = async (fileAsBase64String, uploadFileName) => {
 
-  const fileHash = Utils.computeCheckSum(file);
-  const dateNow = Date.now();
+  const fileHash = Utils.computeCheckSum(fileAsBase64String);
+  const dateNow = new Date().toISOString();
   const batch = await batchModel.findOne({fileHash: fileHash});
   if (batch) {
     console.error('File batch already exists ', dateNow);
@@ -32,9 +32,10 @@ module.exports.uploadBatchFile = async (file) => {
   const fileName = dateNow + '_' + Utils.generateRandomString();
   let batchSize = 0;
   let bulkRequest = [];
-  const fileAsString = String.fromCharCode.apply(null, file);
+  let buff = new Buffer(fileAsBase64String, 'base64');
+  let text = buff.toString('ascii');
   try {
-    const fileArray = await csvToJson().fromString(fileAsString);
+    const fileArray = await csvToJson().fromString(text);
     batchSize = fileArray.length;
 
     for (let i = 0; i < fileArray.length; i++) {
@@ -47,7 +48,8 @@ module.exports.uploadBatchFile = async (file) => {
         .sort('-createdAt');
 
       if (!order) {
-        return;
+        console.log('Batch Upload - Order with clientId %s not found', clientId);
+        continue;
       }
       await orderModel.findByIdAndUpdate(order._id, {
         status: Status.IN_TRANSIT,
@@ -66,15 +68,18 @@ module.exports.uploadBatchFile = async (file) => {
 
     if (bulkRequest.length) {
       messagingService.sendBulkPush(bulkRequest);
+    }else {
+      throw new Error("Unable to update order status. Check that clientIds are valid.")
     }
     return batchModel.create({
       fileHash,
       fileName,
+      uploadFileName,
       size: batchSize
     });
   } catch (err) {
     console.log('Error occurred while processing batch on date: ', new Date(Date.now()), err.message)
-    throw new Error('Error while processing batch');
+    throw new Error('Error while processing batch: ' + err.message);
   }
 
 }

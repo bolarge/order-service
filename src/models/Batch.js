@@ -17,6 +17,9 @@ const schemaObj = {
   size: {
     type: Number
   },
+  uploadFileName: {
+    type: String, required: true
+  }
 }
 
 const BatchSchema = new mongoose.Schema(schemaObj, BaseSchema.baseSchemaConfig);

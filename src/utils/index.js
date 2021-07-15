@@ -14,8 +14,8 @@ module.exports = {
     return s;
   },
 
-  computeCheckSum: function (byteArray) {
-    return md5(this.convertByTeArrayToHexString(byteArray));
+  computeCheckSum: function (base64String) {
+    return md5(base64String);
   },
 
   generateRandomString: function (length) {
