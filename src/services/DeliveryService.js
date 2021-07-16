@@ -28,15 +28,12 @@ module.exports.updateDeliveryStatus = async () => {
   if (pendingOrders.length > 0) {
     let batches = [];
     let tempBatch = [];
-    let currentCount = 0;
 
     for (let i = 0; i < pendingOrders.length; i++) {
       tempBatch.push(pendingOrders[i].wayBillNumber);
-      currentCount++;
 
-      if (currentCount === parseInt(batchMaxCount) || i === pendingOrders.length - 1) {
+      if (tempBatch.length === parseInt(batchMaxCount) || i === pendingOrders.length - 1) {
         batches.push(tempBatch);
-        currentCount = 0;
         tempBatch = [];
       }
 
@@ -45,7 +42,7 @@ module.exports.updateDeliveryStatus = async () => {
     for (let i = 0; i < batches.length; i++) {
       try {
         let batchUpdatedStatus = await getStatusForBatch(batches[i]);
-        await processBatchUpdate(batchUpdatedStatus);
+         processBatchUpdate(batchUpdatedStatus);
       } catch (err) {
         console.log(`error while getting delivery status for waybill numbers ${batches[i]} - ${err}`);
       }
@@ -92,6 +89,6 @@ const processBatchUpdate = async (batchUpdatedStatus) => {
     }
 
   } catch (err) {
-    console.log(`error sending push messages ${pushMessages} - ${err}`)
+    console.log(`error sending push messages - ${err}`)
   }
 };

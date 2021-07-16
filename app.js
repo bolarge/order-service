@@ -4,7 +4,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const cron = require('node-cron');
-const deliveryService = require('./src/services/DeliveryService');
+const cronJobs = require('./src/crons/cronJobs');
 
 const config = require('./src/config');
 
@@ -24,10 +24,6 @@ app.listen(config.app.port);
 console.log('Serving on port ' + config.app.port);
 // expose app
 
-// Schedule tasks to be run on the server.
-cron.schedule(config.deliveryService.deliveryUpdateSchedule, function() {
-  console.log('running update delivery status task');
-  deliveryService.updateDeliveryStatus();
-}, {});
+cronJobs.startJobs();
 
 module.exports = app
