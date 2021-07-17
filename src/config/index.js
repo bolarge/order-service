@@ -28,13 +28,15 @@ module.exports = {
     }
   },
   cardService: {
-    baseUrl: process.env.CARD_SERVICE_URL || 'hhttps://cardservice-staging.getcarbon.co',
+    baseUrl: process.env.CARD_SERVICE_URL || 'https://cardservice-staging.getcarbon.co',
     username: process.env.CARD_SERVICE_USERNAME || 'user',
     password: process.env.CARD_SERVICE_PASSWORD || 'pass',
     cardType: process.env.CARD_TYPE || 'PHYSICAL',
   },
   deliveryService: {
     baseUrl: process.env.DELIVERY_SERVICE_URL || 'http://delivery-service.staging.getcarbon.co',
+    batchStatusUpdateMaxCount: process.env.BATCH_STATUS_UPDATE_MAX_CONT || 100,
+    deliveryUpdateSchedule: process.env.DELIVERY_UPDATE_SCHEDULE,
   },
   paylaterService: {
     baseUrl: process.env.PAYLATER_SERVICE_URL || 'http://api.staging.paylater.ng',
