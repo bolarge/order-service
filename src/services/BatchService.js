@@ -43,7 +43,7 @@ module.exports.uploadBatchFile = async (fileAsBase64String, uploadFileName) => {
       let order = await orderModel.findOne({
         clientId: clientId,
         status: Status.ORDER_CREATED,
-        waybillNumber: null
+        wayBillNumber: null
       })
         .sort('-createdAt');
 

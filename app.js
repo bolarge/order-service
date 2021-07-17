@@ -1,5 +1,9 @@
 'use strict'
 
+const express = require('express');
+const app = express();
+const cors = require('cors');
+const cronJobs = require('./src/crons/cronJobs');
 const express = require('express')
 const app = express()
 const cors = require('cors')
@@ -33,5 +37,7 @@ app.listen(config.app.port);
 // shout out to the user
 console.log('Serving on port ' + config.app.port);
 // expose app
+
+cronJobs.startJobs();
 
 module.exports = app
