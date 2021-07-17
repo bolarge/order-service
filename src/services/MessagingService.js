@@ -24,7 +24,6 @@ module.exports.sendBulkPush = async (bulkRequest) => {
 };
 
 module.exports.sendTemplateEmail = async (subject, sender, recipients, templateName, tags, globalMergeVars, base64String, fileName) => {
-
   try {
     return makeRequest('/email', 'POST', {
       messageTemplate: templateName,

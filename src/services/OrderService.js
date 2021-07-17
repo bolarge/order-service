@@ -170,13 +170,8 @@ module.exports.getRescheduleForDeliveryOnly = async () => {
     clientsDetailsArray[j++] = client;
   }
 
-  //Problem occurs when file is not readable on 177
-  const csvFilePath = path.join(__dirname, '../');
   const fileName = await csvService.generateBatchCsv(clientsDetailsArray);
-  console.log('Directory is ' + __dirname);
-  const fileAsBase64String = await fs.readFile(csvFilePath + `${fileName}`, {encoding: 'base64'});
-  console.log('What is ' + fileName);
-  console.log('Does is ' + fileAsBase64String);
+  const fileAsBase64String = await fs.readFile(`${fileName}`, {encoding: 'base64'});
 
   const sender = batchConfig.senderEmails;
   const subject = batchConfig.emailSubject;
@@ -188,9 +183,9 @@ module.exports.getRescheduleForDeliveryOnly = async () => {
   const globalmergeVars = [{name: "batchDate", content: Date.now()}];
 
   await messagingService.sendTemplateEmail(subject, sender, recipientEmails, templateName, tags, globalmergeVars,
-    fileAsBase64String, fileName);
+    fileAsBase64String, `${fileName}`);
 
-  await s3Service.uploadFile(fileName);
+  await s3Service.uploadFile(`${fileName}`);
 
 }
 

@@ -1,10 +1,13 @@
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
-const Utils = require('../utils')
+const Utils = require('../utils');
+const path = require("path");
 
 
 module.exports.generateBatchCsv = async (bulkRequest) => {
   const randomString = Utils.generateRandomString(3);
-  const fileName = `${randomString}_batched_csv_` + new Date().toISOString();
+  let fileName = `${randomString}_batched_csv_` + new Date().toISOString();
+  let csvFilePath = path.join(__dirname, '../');
+  fileName = csvFilePath + fileName;
   const csvWriter = createCsvWriter({
     path: fileName,
     header: [

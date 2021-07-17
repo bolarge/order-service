@@ -51,7 +51,7 @@ module.exports = {
   },
   batchConfig: {
     senderEmails: process.env.SENDER_EMAILS || 'customer@getcarbon.co',
-    recipientEmails: process.env.RECIPIENT_EMAILS || ['oahwin@getcarbon.co'],
+    recipientEmails: process.env.RECIPIENT_EMAILS || ['oahwin@getcarbon.co', 'asalau@getcarbon.co'],
     emailSubject: process.env.EMAIL_SUBJECT || 'ORDER DELIVERY BATCH',
     templateName: process.env.TEMPLATE_NAME || 'batch-delivery',
   },

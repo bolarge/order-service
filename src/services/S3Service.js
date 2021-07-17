@@ -10,7 +10,7 @@ AWS.config.update({
 const s3 = new AWS.S3({});
 
 module.exports.uploadFile = async (fileName) => {
-  return fs.readFile(__dirname + `/${fileName}`)
+  return fs.readFile(fileName)
     .then (file => {
       const params = {
         Bucket: s3Config.bucketName,
