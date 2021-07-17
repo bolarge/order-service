@@ -28,18 +28,18 @@ module.exports = {
     }
   },
   cardService: {
-    baseUrl: process.env.CARD_SERVICE_URL || 'hhttps://cardservice-staging.getcarbon.co',
-    username: process.env.CARD_SERVICE_USERNAME || 'user',
-    password: process.env.CARD_SERVICE_PASSWORD || 'pass',
+    baseUrl: process.env.CARD_SERVICE_URL || 'https://cardservice-staging.getcarbon.co',
+    username: process.env.CARD_SERVICE_USERNAME || 'test',
+    password: process.env.CARD_SERVICE_PASSWORD || 'test',
     cardType: process.env.CARD_TYPE || 'PHYSICAL',
   },
   deliveryService: {
     baseUrl: process.env.DELIVERY_SERVICE_URL || 'http://delivery-service.staging.getcarbon.co',
   },
   paylaterService: {
-    baseUrl: process.env.PAYLATER_SERVICE_URL || 'http://api.staging.paylater.ng',
-    username: process.env.PAYLATER_SERVICE_USERNAME || 'user',
-    password: process.env.PAYLATER_SERVICE_PASSWORD || 'pass',
+    baseUrl: process.env.PAYLATER_SERVICE_URL || 'https://api.staging.paylater.ng',
+    username: process.env.PAYLATER_SERVICE_USERNAME || 'test-account',
+    password: process.env.PAYLATER_SERVICE_PASSWORD || 'password',
     xAppVersion: process.env.PAYLATER_X_APP_VERSION || '6.5.0'
   },
   delivery: {

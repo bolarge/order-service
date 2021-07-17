@@ -14,6 +14,7 @@ const fs = require('fs').promises;
 const batchConfig = require('../config').batchConfig;
 const messagingService = require('./MessagingService');
 const s3Service = require('./S3Service')
+const path = require("path");
 
 
 module.exports.createOrder = async (body) => {
@@ -142,10 +143,55 @@ module.exports.handleBatchedCustomerInformation = async (body) => {
 }
 
 module.exports.getRescheduleForDeliveryOnly = async () => {
-  const orders = await orderModel.find({status: Status.FAILED, type: OrderType.DELIVERY_ONLY})
-  if(!orders){
-    console.log('No failed delivery order at this time');
+  const orders = await orderModel.find({status: Status.FAILED, type: OrderType.DELIVERY_ONLY}, 'clientId', {sort : {createdAt : -1}},
+    function (err, orders){ if (err){console.log(err);} });
+
+  let clientIdArray = [];
+  let i = 0;
+  if(orders){
+    for (const order in orders) {
+      clientIdArray[i++] = orders[order].clientId;
+    }
   }
-  return orders;
+
+  let j = 0;
+  let clientsDetailsArray = [];
+  for (const clientId in clientIdArray){
+    const customerDetails = await paylaterService.getCustomerDetailsByClientId(clientIdArray[clientId]);
+    const client = {
+      customerId: customerDetails.clientId,
+      customerFullName: customerDetails.firstname + " " +customerDetails.lastname,
+      customerGender: customerDetails.gender,
+      customerPhoneNumber: customerDetails.phonenumber,
+      CustomerEmail: customerDetails.email,
+      cardDisplayName: customerDetails.firstname + customerDetails.lastname,
+      deliveryAddress: customerDetails.address
+    }
+    clientsDetailsArray[j++] = client;
+  }
+
+  //Problem occurs when file is not readable on 177
+  const csvFilePath = path.join(__dirname, '../');
+  const fileName = await csvService.generateBatchCsv(clientsDetailsArray);
+  console.log('Directory is ' + __dirname);
+  const fileAsBase64String = await fs.readFile(csvFilePath + `${fileName}`, {encoding: 'base64'});
+  console.log('What is ' + fileName);
+  console.log('Does is ' + fileAsBase64String);
+
+  const sender = batchConfig.senderEmails;
+  const subject = batchConfig.emailSubject;
+  const recipientEmails = batchConfig.recipientEmails.map((email, index) => {
+    return (index == 0) ? { email }: {email, type: "cc"};
+  });
+  const templateName = batchConfig.templateName;
+  const tags = ['order-service', 'batch-delivery']
+  const globalmergeVars = [{name: "batchDate", content: Date.now()}];
+
+  await messagingService.sendTemplateEmail(subject, sender, recipientEmails, templateName, tags, globalmergeVars,
+    fileAsBase64String, fileName);
+
+  await s3Service.uploadFile(fileName);
+
 }
+
 
