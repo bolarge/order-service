@@ -14,7 +14,6 @@ const fs = require('fs').promises;
 const batchConfig = require('../config').batchConfig;
 const messagingService = require('./MessagingService');
 const s3Service = require('./S3Service')
-const path = require("path");
 
 
 module.exports.createOrder = async (body) => {
@@ -130,7 +129,7 @@ module.exports.handleBatchedCustomerInformation = async (body) => {
   const sender = batchConfig.senderEmails;
   const subject = batchConfig.emailSubject;
   const recipientEmails = batchConfig.recipientEmails.map((email, index) => {
-    return (index == 0) ? { email }: {email, type: "cc"};
+    return (index === 0) ? { email }: {email, type: "cc"};
   });
   const templateName = batchConfig.templateName;
   const tags = ['order-service', 'batch-delivery']
@@ -158,16 +157,15 @@ module.exports.getRescheduleForDeliveryOnly = async () => {
   let clientsDetailsArray = [];
   for (const clientId in clientIdArray){
     const customerDetails = await paylaterService.getCustomerDetailsByClientId(clientIdArray[clientId]);
-    const client = {
+    clientsDetailsArray[j++] = {
       customerId: customerDetails.clientId,
-      customerFullName: customerDetails.firstname + " " +customerDetails.lastname,
+      customerFullName: customerDetails.firstname + " " + customerDetails.lastname,
       customerGender: customerDetails.gender,
       customerPhoneNumber: customerDetails.phonenumber,
       CustomerEmail: customerDetails.email,
       cardDisplayName: customerDetails.firstname + customerDetails.lastname,
       deliveryAddress: customerDetails.address
-    }
-    clientsDetailsArray[j++] = client;
+    };
   }
 
   const fileName = await csvService.generateBatchCsv(clientsDetailsArray);
@@ -176,7 +174,7 @@ module.exports.getRescheduleForDeliveryOnly = async () => {
   const sender = batchConfig.senderEmails;
   const subject = batchConfig.emailSubject;
   const recipientEmails = batchConfig.recipientEmails.map((email, index) => {
-    return (index == 0) ? { email }: {email, type: "cc"};
+    return (index === 0) ? { email }: {email, type: "cc"};
   });
   const templateName = batchConfig.templateName;
   const tags = ['order-service', 'batch-delivery']
