@@ -2,7 +2,7 @@ const deliveryServiceConfig = require("../config").deliveryService,
   Order = require('../models/Order').Model,
   Status = require('../enums').Status,
   PushMessageKeys = require('../enums').PushMessageKeys,
-  messagingMiddleware = require('../services/MessagingMiddleware'),
+  messagingService = require('../services/MessagingService'),
   request = require("request-promise-native");
 
 const makeRequest = (path, method, countryCode, body = true, qs = null, headers = {}) => {
@@ -85,7 +85,7 @@ const processBatchUpdate = async (batchUpdatedStatus) => {
 
   try {
     if(pushMessages.length > 0){
-      messagingMiddleware.sendBulkPush(pushMessages);
+      messagingService.sendBulkPush(pushMessages);
     }
 
   } catch (err) {
