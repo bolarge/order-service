@@ -1,9 +1,9 @@
-const deliveryServiceConfig = require("../config").deliveryService;
-const Order = require('../models/Order').Model;
-const Status = require('../enums').Status;
-const PushMessageKeys = require('../enums').PushMessageKeys;
-const MessagingService = require('./MessagingService');
-const request = require("request-promise-native");
+const deliveryServiceConfig = require("../config").deliveryService,
+  Order = require('../models/Order').Model,
+  Status = require('../enums').Status,
+  PushMessageKeys = require('../enums').PushMessageKeys,
+  messagingService = require('../services/MessagingService'),
+  request = require("request-promise-native");
 
 const makeRequest = (path, method, countryCode, body = true, qs = null, headers = {}) => {
   console.log(`making request to ${deliveryServiceConfig.baseUrl}${path}`)
@@ -85,7 +85,7 @@ const processBatchUpdate = async (batchUpdatedStatus) => {
 
   try {
     if(pushMessages.length > 0){
-      MessagingService.sendBulkPush(pushMessages);
+      messagingService.sendBulkPush(pushMessages);
     }
 
   } catch (err) {
