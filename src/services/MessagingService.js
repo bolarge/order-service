@@ -52,7 +52,7 @@ module.exports.sendTemplateEmail = async (subject, sender, recipients, templateN
       },
     });
   } catch (err) {
-    console.log({ error: err.message });
+    console.error( `Error occurred sending mail: : ${err.message}`);
   }
 
 }

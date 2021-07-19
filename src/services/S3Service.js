@@ -1,6 +1,7 @@
 const AWS = require('aws-sdk');
 const s3Config = require('../config').s3Service;
 const fs = require('fs').promises;
+const path = require("path");
 
 AWS.config.update({
   accessKeyId: s3Config.accessKey,
@@ -10,7 +11,7 @@ AWS.config.update({
 const s3 = new AWS.S3({});
 
 module.exports.uploadFile = async (fileName) => {
-  return fs.readFile(__dirname + `/${fileName}`)
+  return fs.readFile(path.resolve(__dirname, `../../${fileName}`))
     .then (file => {
       const params = {
         Bucket: s3Config.bucketName,
@@ -22,7 +23,7 @@ module.exports.uploadFile = async (fileName) => {
         console.log('File: %s, uploaded successfully, file location: %s', fileName, data.Location)
       });
     }).catch((err) => {
-      console.log('Error occurred while uploading batch file', err.message);
+      console.error(`Error occurred while uploading batch file, ${fileName}, Error:`, err.message);
       throw err;
     });
 }

@@ -13,7 +13,9 @@ const csvService = require('../services/CsvService');
 const fs = require('fs').promises;
 const batchConfig = require('../config').batchConfig;
 const messagingService = require('./MessagingService');
-const s3Service = require('./S3Service')
+const s3Service = require('./S3Service');
+const path = require("path");
+
 
 
 module.exports.createOrder = async (body) => {
@@ -27,7 +29,7 @@ module.exports.createOrder = async (body) => {
   const customerDetails = await paylaterService.getCustomerDetailsByClientId(clientId);
   const newOrder = {
     clientId: clientId,
-    name: customerDetails.firstname + customerDetails.lastname,
+    name: `${customerDetails.firstname} ${customerDetails.lastname}`,
     deliveryId: body.deliveryId,
     country: customerDetails.country,
     externalReference: body.internalRef
@@ -123,8 +125,8 @@ module.exports.handleBatchedCustomerInformation = async (body) => {
   if (!data.length) {
     return;
   }
-  const fileName = await csvService.generateBatchCsv(data);
-  const fileAsBase64String = await fs.readFile(__dirname + `/${fileName}`, {encoding: 'base64'});
+  const fileName = await csvService.generateCustomerBatchCsv(data);
+  const fileAsBase64String = await fs.readFile(path.resolve(__dirname, `../../${fileName}`), {encoding: 'base64'});
 
   const sender = batchConfig.senderEmails;
   const subject = batchConfig.emailSubject;
