@@ -55,7 +55,7 @@ module.exports = {
     senderEmails: process.env.SENDER_EMAILS || 'customer@getcarbon.co',
     recipientEmails: process.env.RECIPIENT_EMAILS || ['oahwin@getcarbon.co'],
     emailSubject: process.env.EMAIL_SUBJECT || 'ORDER DELIVERY BATCH',
-    templateName: process.env.TEMPLATE_NAME || 'batch-delivery',
+    templateName: process.env.TEMPLATE_NAME || 'card-batch-delivery-staging',
   },
   s3Service: {
     bucketName: process.env.S3_BUCKET_NAME || 'card-batch-delivery',
