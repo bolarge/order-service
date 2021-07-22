@@ -125,11 +125,12 @@ module.exports.handleBatchedCustomerInformation = async (body) => {
   if (!data.length) {
     return;
   }
-  const fileName = await csvService.generateCustomerBatchCsv(data);
+  const dateNow = new Date().toISOString();
+  const fileName = await csvService.generateCustomerBatchCsv(data, dateNow);
   const fileAsBase64String = await fs.readFile(path.resolve(__dirname, `../../${fileName}`), {encoding: 'base64'});
 
   const sender = batchConfig.senderEmails;
-  const subject = batchConfig.emailSubject;
+  const subject = batchConfig.emailSubject + `_${dateNow}`;
   const recipientEmails = batchConfig.recipientEmails.map((email, index) => {
     return (index == 0) ? { email }: {email, type: "cc"};
   });
