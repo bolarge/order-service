@@ -18,9 +18,15 @@ const makeRequest = (path, method, body, qs, headers = {}) => {
 
 
 module.exports.sendBulkPush = async (bulkRequest) => {
-  return makeRequest('/bulk-push', 'POST',
-    {bulkRequest: bulkRequest},
-    null, {'X-Entity': countryConfig.ng.code, 'X-Locale-Lang': null});
+  for (let i = 0; i < bulkRequest.length; i++) {
+    await makeRequest('/push', 'POST',
+      {
+        clientId: bulkRequest[i].clientId, messageKey: bulkRequest[i].messageKey,
+        vars: bulkRequest[i].vars
+      },
+      null, {'X-Entity': countryConfig.ng.code, 'X-Locale-Lang': null});
+  }
+  return true;
 };
 
 module.exports.sendTemplateEmail = async (subject, sender, recipients, templateName, tags, globalMergeVars, base64String, fileName) => {
@@ -52,7 +58,7 @@ module.exports.sendTemplateEmail = async (subject, sender, recipients, templateN
       },
     });
   } catch (err) {
-    console.error( `Error occurred sending mail: : ${err.message}`);
+    console.error(`Error occurred sending mail: : ${err.message}`);
   }
 
 }
