@@ -132,7 +132,8 @@ module.exports.handleBatchedCustomerInformation = async (body) => {
 
   const sender = batchConfig.senderEmails;
   const subject = `NEW_DELIVERY_${dateFormatted}`;
-  const recipientEmails = batchConfig.recipientEmails.map((email, index) => {
+  const recipients =  batchConfig.recipientEmails.split(',');
+  const recipientEmails = recipients.map((email, index) => {
     return (index === 0) ? {email} : {email, type: "cc"};
   });
   const templateName = batchConfig.templateName;
@@ -180,7 +181,9 @@ module.exports.getRescheduleForDeliveryOnly = async () => {
 
   const sender = batchConfig.senderEmails;
   const subject = `RESCHEDULED_DELIVERY_${dateFormatted}`;
-  const recipientEmails = batchConfig.recipientEmails.map((email, index) => {
+
+  const recipients =  batchConfig.recipientEmails.split(',');
+  const recipientEmails = recipients.map((email, index) => {
     return (index === 0) ? {email} : {email, type: "cc"};
   });
   const templateName = batchConfig.templateName;

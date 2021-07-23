@@ -54,7 +54,7 @@ module.exports = {
   },
   batchConfig: {
     senderEmails: process.env.SENDER_EMAILS || 'developers@getcarbon.co',
-    recipientEmails: process.env.RECIPIENT_EMAILS || ['oahwin@getcarbon.co', 'asalau@getcarbon.co'],
+    recipientEmails: process.env.RECIPIENT_EMAILS || 'oahwin@getcarbon.co,asalau@getcarbon.co,unnamadim@getcarbon.co',
     templateName: process.env.TEMPLATE_NAME || 'card-batch-delivery',
   },
   s3Service: {
