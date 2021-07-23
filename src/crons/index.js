@@ -11,9 +11,9 @@ module.exports.startJobs = async () => {
       logMessage: 'running update delivery status task'
     },
     {
-      cronFunc: orderService.getRescheduleForDeliveryOnly(),
+      cronFunc: orderService.getRescheduleForDeliveryOnly,
       schedule: deliveryConfig.rescheduleDeliverySchedule,
-      logMessage: 're-scheduled failed delivery only orders'
+      logMessage: 'sending batch of re-scheduled delivery only orders'
     },
   ];
 
