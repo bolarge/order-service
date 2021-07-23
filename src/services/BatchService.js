@@ -25,8 +25,8 @@ module.exports.uploadBatchFile = async (fileAsBase64String, uploadFileName) => {
 
   /** csv expected format
    * Client ID, Waybill Number
-   * 12448193, 20
-   * 27493022, 10
+   * 12448193, 2024
+   * 27493022, 1056
    */
 
   const fileName = dateNow + '_' + Utils.generateRandomString();
