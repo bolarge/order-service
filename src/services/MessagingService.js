@@ -3,7 +3,6 @@ const request = require("request-promise-native");
 const countryConfig = require("../config").countryConfig;
 
 const makeRequest = (path, method, body, qs, headers = {}) => {
-
   console.log(`making request to ${messagingConfig.baseUrl}${path}`)
 
   const options = {
@@ -18,18 +17,23 @@ const makeRequest = (path, method, body, qs, headers = {}) => {
 
 
 module.exports.sendBulkPush = async (bulkRequest) => {
+  let pushPromises = [];
   for (let i = 0; i < bulkRequest.length; i++) {
-    await makeRequest('/push', 'POST',
-      {
-        clientId: bulkRequest[i].clientId, messageKey: bulkRequest[i].messageKey,
-        vars: bulkRequest[i].vars
-      },
-      null, {'X-Entity': countryConfig.ng.code, 'X-Locale-Lang': null});
+    pushPromises.push(buildPushRequest(bulkRequest[i]));
   }
-  return true;
+  await Promise.all(pushPromises);
 };
 
-module.exports.sendTemplateEmail = async (subject, sender, recipients, templateName, tags, globalMergeVars, base64String, fileName) => {
+async function buildPushRequest(singleRequest) {
+  makeRequest('/push', 'POST',
+    {
+      clientId: singleRequest.clientId, messageKey: singleRequest.messageKey,
+      vars: singleRequest.vars
+    },
+    null, {'X-Entity': countryConfig.ng.code, 'X-Locale-Lang': null});
+}
+
+module.exports.sendTemplateEmail = async (subject, sender, recipients, templateName, tags, base64String, fileName, globalMergeVars = []) => {
   try {
     return makeRequest('/email', 'POST', {
       messageTemplate: templateName,
@@ -58,6 +62,7 @@ module.exports.sendTemplateEmail = async (subject, sender, recipients, templateN
     });
   } catch (err) {
     console.error(`Error occurred sending mail: : ${err.message}`);
+    throw new Error('Error occurred sending mail');
   }
 
 }

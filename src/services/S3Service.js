@@ -17,10 +17,13 @@ module.exports.uploadFile = async (fileName) => {
         Key: fileName, // File name that appears in S3
         Body: file
       };
-      s3.upload(params, function (s3Err, data) {
-        if (s3Err) throw s3Err
-        console.log('File: %s, uploaded successfully, file location: %s', fileName, data.Location)
-      });
+        s3.upload(params, function (s3Err, data) {
+          if (s3Err) {
+            console.log('Error occurred while uploading batch file', s3Err.message);
+          } else {
+            console.log('File: %s, uploaded successfully, file location: %s', fileName, data.Location)
+          }
+        });
     }).catch((err) => {
       console.log('Error occurred while uploading batch file', err.message);
       throw err;

@@ -1,4 +1,5 @@
 const paylaterServiceConfig = require("../config").paylaterService;
+const deliveryService = require('../services/DeliveryService');
 const request = require("request-promise-native");
 
 const makeRequest = (path, method, countryCode, body = true, qs = null, headers = {}) => {
@@ -25,4 +26,15 @@ const makeRequest = (path, method, countryCode, body = true, qs = null, headers 
 
 module.exports.getCustomerDetailsByClientId = async (clientId) => {
   return makeRequest(`/api/user/lookup/customerId/${clientId}`, "GET");
+};
+
+module.exports.getCustomerDetailsAndAddressByOrder = async (order) => {
+  const paylaterInfo =  await makeRequest(`/api/user/lookup/customerId/${order.clientId}`, "GET");
+
+  const deliveryInfo = await deliveryService.getDeliveryInfo(order.deliveryId);
+
+  return {
+    paylaterInfo,
+    deliveryAddress: deliveryInfo.deliveryAddress
+  }
 };

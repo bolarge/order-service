@@ -17,7 +17,6 @@ const s3Service = require('./S3Service');
 const path = require("path");
 
 
-
 module.exports.createOrder = async (body) => {
   const order = await orderModel.findOne({clientId: body.clientId, status: Status.ORDER_CREATED});
   const clientId = body.clientId;
@@ -125,69 +124,72 @@ module.exports.handleBatchedCustomerInformation = async (body) => {
   if (!data.length) {
     return;
   }
-  const dateNow = new Date().toISOString();
-  const fileName = await csvService.generateCustomerBatchCsv(data, dateNow);
+  const dateNow = new Date();
+  const dateFormatted = dateNow.getDate() + '-' + (dateNow.getMonth() + 1) + '-' + dateNow.getFullYear();
+  const fileNamePrefix = 'batched_new_delivery_csv'
+  const fileName = await csvService.generateCustomerBatchCsv(fileNamePrefix, data, dateFormatted);
   const fileAsBase64String = await fs.readFile(path.resolve(__dirname, `../../${fileName}`), {encoding: 'base64'});
 
   const sender = batchConfig.senderEmails;
-  const subject = batchConfig.emailSubject + `_${dateNow}`;
+  const subject = `NEW_DELIVERY_${dateFormatted}`;
   const recipientEmails = batchConfig.recipientEmails.map((email, index) => {
-    return (index === 0) ? { email }: {email, type: "cc"};
+    return (index === 0) ? {email} : {email, type: "cc"};
   });
   const templateName = batchConfig.templateName;
   const tags = ['order-service', 'batch-delivery']
-  const globalmergeVars = [{name: "batchDate", content: Date.now()}];
 
-  await messagingService.sendTemplateEmail(subject, sender, recipientEmails, templateName, tags, globalmergeVars,
+  await messagingService.sendTemplateEmail(subject, sender, recipientEmails, templateName, tags,
     fileAsBase64String, fileName);
 
-  await s3Service.uploadFile(fileName);
+  s3Service.uploadFile(fileName);
 }
 
 module.exports.getRescheduleForDeliveryOnly = async () => {
-  const orders = await orderModel.find({status: Status.FAILED, type: OrderType.DELIVERY_ONLY}, 'clientId', {sort : {createdAt : -1}},
-    function (err, orders){ if (err){console.log(err);} });
-
-  let clientIdArray = [];
-  let i = 0;
-  if(orders){
-    for (const order in orders) {
-      clientIdArray[i++] = orders[order].clientId;
-    }
+  const orders = await orderModel.find({status: Status.ORDER_CREATED, type: OrderType.DELIVERY_ONLY}).sort('-createdAt');
+  if (!orders.length) {
+    return;
   }
 
-  let j = 0;
-  let clientsDetailsArray = [];
-  for (const clientId in clientIdArray){
-    const customerDetails = await paylaterService.getCustomerDetailsByClientId(clientIdArray[clientId]);
-    clientsDetailsArray[j++] = {
-      customerId: customerDetails.clientId,
-      customerFullName: customerDetails.firstname + " " + customerDetails.lastname,
-      customerGender: customerDetails.gender,
-      customerPhoneNumber: customerDetails.phonenumber,
-      CustomerEmail: customerDetails.email,
-      cardDisplayName: customerDetails.firstname + customerDetails.lastname,
-      deliveryAddress: customerDetails.address
-    };
+  let clientInfoPromises = [];
+  for (let i = 0; i < orders.length; i++) {
+    clientInfoPromises.push(paylaterService.getCustomerDetailsAndAddressByOrder(orders[i]));
   }
 
-  const fileName = await csvService.generateBatchCsv(clientsDetailsArray);
-  const fileAsBase64String = await fs.readFile(`${fileName}`, {encoding: 'base64'});
+  let customerInfoArray = [];
+  await Promise.all(clientInfoPromises)
+    .then(responses => responses.forEach(
+      response => {
+        let customerInfo = {
+          customerId: response.paylaterInfo.clientId,
+          customerFullName: `${response.paylaterInfo.firstname} ${response.paylaterInfo.lastname}`,
+          customerGender: response.paylaterInfo.gender,
+          customerPhoneNumber: response.paylaterInfo.phonenumber,
+          CustomerEmail: response.paylaterInfo.email,
+          cardDisplayName: `${response.paylaterInfo.firstname} ${response.paylaterInfo.lastname}`,
+          deliveryAddress: response.deliveryAddress
+        }
+        customerInfoArray.push(customerInfo);
+      }
+    ));
+
+  const dateNow = new Date();
+  const dateFormatted = dateNow.getDate() + '-' + (dateNow.getMonth() + 1) + '-' + dateNow.getFullYear();
+  const fileNamePrefix = 'batched_rescheduled_delivery_csv'
+  const fileName = await csvService.generateCustomerBatchCsv(fileNamePrefix, customerInfoArray, dateFormatted);
+  const fileAsBase64String = await fs.readFile(path.resolve(__dirname, `../../${fileName}`), {encoding: 'base64'});
 
   const sender = batchConfig.senderEmails;
-  const subject = batchConfig.emailSubject;
+  const subject = `RESCHEDULED_DELIVERY_${dateFormatted}`;
   const recipientEmails = batchConfig.recipientEmails.map((email, index) => {
-    return (index === 0) ? { email }: {email, type: "cc"};
+    return (index === 0) ? {email} : {email, type: "cc"};
   });
   const templateName = batchConfig.templateName;
   const tags = ['order-service', 'batch-delivery']
-  const globalmergeVars = [{name: "batchDate", content: Date.now()}];
 
-  await messagingService.sendTemplateEmail(subject, sender, recipientEmails, templateName, tags, globalmergeVars,
-    fileAsBase64String, `${fileName}`);
+  await messagingService.sendTemplateEmail(subject, sender, recipientEmails, templateName, tags,
+    fileAsBase64String, fileName);
 
-  await s3Service.uploadFile(`${fileName}`);
-
+  s3Service.uploadFile(fileName);
 }
 
 
