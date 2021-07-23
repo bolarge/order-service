@@ -119,20 +119,20 @@ module.exports.getDeliveryInformation = async (cardId) => {
   }
 }
 
-module.exports.handleBatchedCustomerInformation = async (body) => {
+module.exports.batchCustomerInformationForNewDeliveries = async (body) => {
   const {data} = body;
   if (!data.length) {
     return;
   }
   const dateNow = new Date();
   const dateFormatted = dateNow.getDate() + '-' + (dateNow.getMonth() + 1) + '-' + dateNow.getFullYear();
-  const fileNamePrefix = 'batched_new_delivery_csv'
+  const fileNamePrefix = 'batch_new_delivery_csv'
   const fileName = await csvService.generateCustomerBatchCsv(fileNamePrefix, data, dateFormatted);
   const fileAsBase64String = await fs.readFile(path.resolve(__dirname, `../../${fileName}`), {encoding: 'base64'});
 
   const sender = batchConfig.senderEmails;
   const subject = `NEW_DELIVERY_${dateFormatted}`;
-  const recipients =  batchConfig.recipientEmails.split(',');
+  const recipients = batchConfig.recipientEmails.split(',');
   const recipientEmails = recipients.map((email, index) => {
     return (index === 0) ? {email} : {email, type: "cc"};
   });
@@ -142,11 +142,22 @@ module.exports.handleBatchedCustomerInformation = async (body) => {
   await messagingService.sendTemplateEmail(subject, sender, recipientEmails, templateName, tags,
     fileAsBase64String, fileName);
 
+  await orderModel.bulkWrite(data.map(singleData => ({
+    updateOne: {
+      filter: {clientId: singleData.customerId, type: OrderType.CARD_REQUEST, status: Status.ORDER_CREATED},
+      update: {batched: true},
+    }
+  })));
+
   s3Service.uploadFile(fileName);
 }
 
-module.exports.getRescheduleForDeliveryOnly = async () => {
-  const orders = await orderModel.find({status: Status.ORDER_CREATED, type: OrderType.DELIVERY_ONLY}).sort('-createdAt');
+module.exports.batchCustomerInformationForRescheduledDeliveries = async () => {
+  const orders = await orderModel.find({
+    status: Status.ORDER_CREATED,
+    type: OrderType.DELIVERY_ONLY,
+    $or: [{batched: false}, {batched: null}]
+  }).sort('-createdAt');
   if (!orders.length) {
     return;
   }
@@ -165,7 +176,7 @@ module.exports.getRescheduleForDeliveryOnly = async () => {
           customerFullName: `${response.paylaterInfo.firstname} ${response.paylaterInfo.lastname}`,
           customerGender: response.paylaterInfo.gender,
           customerPhoneNumber: response.paylaterInfo.phonenumber,
-          CustomerEmail: response.paylaterInfo.email,
+          customerEmail: response.paylaterInfo.email,
           cardDisplayName: `${response.paylaterInfo.firstname} ${response.paylaterInfo.lastname}`,
           deliveryAddress: response.deliveryAddress
         }
@@ -175,14 +186,14 @@ module.exports.getRescheduleForDeliveryOnly = async () => {
 
   const dateNow = new Date();
   const dateFormatted = dateNow.getDate() + '-' + (dateNow.getMonth() + 1) + '-' + dateNow.getFullYear();
-  const fileNamePrefix = 'batched_rescheduled_delivery_csv'
+  const fileNamePrefix = 'batch_rescheduled_delivery_csv'
   const fileName = await csvService.generateCustomerBatchCsv(fileNamePrefix, customerInfoArray, dateFormatted);
   const fileAsBase64String = await fs.readFile(path.resolve(__dirname, `../../${fileName}`), {encoding: 'base64'});
 
   const sender = batchConfig.senderEmails;
   const subject = `RESCHEDULED_DELIVERY_${dateFormatted}`;
 
-  const recipients =  batchConfig.recipientEmails.split(',');
+  const recipients = batchConfig.recipientEmails.split(',');
   const recipientEmails = recipients.map((email, index) => {
     return (index === 0) ? {email} : {email, type: "cc"};
   });
@@ -191,6 +202,13 @@ module.exports.getRescheduleForDeliveryOnly = async () => {
 
   await messagingService.sendTemplateEmail(subject, sender, recipientEmails, templateName, tags,
     fileAsBase64String, fileName);
+
+  await orderModel.bulkWrite(orders.map(order => ({
+    updateOne: {
+      filter: {clientId: order.clientId, type: OrderType.DELIVERY_ONLY, status: Status.ORDER_CREATED},
+      update: {$set: {batched: true}},
+    }
+  })));
 
   s3Service.uploadFile(fileName);
 }

@@ -17,7 +17,8 @@ module.exports = function (app) {
   app.get('/v1/orders/history/:clientId', orderController.getOrderHistory)
   app.get('/v1/orders/delivery/:cardId', orderController.getCardDeliveryInformation)
   app.get('/v1/orders/external-ref/:externalReference', orderController.getOrderByExternalReference)
-  app.post('/v1/orders/batch', orderController.handleBatchedCustomerInformation)
+  app.post('/v1/orders/batch', orderController.batchCustomerInformationForNewDeliveries)
+  app.post('/v1/orders/rescheduled-batch', orderController.batchCustomerInformationForRescheduledDeliveries)
 
 
 

@@ -49,6 +49,9 @@ const schemaObj = {
   },
   wayBillNumber: {
     type: String, required: false
+  },
+  batched: {
+    type: Boolean, default: false
   }
 }
 
