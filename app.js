@@ -1,10 +1,9 @@
 'use strict'
 
-const express = require('express');
-const app = express();
-const cors = require('cors');
-const cronJobs = require('./src/crons/cronJobs');
-
+const express = require('express')
+const app = express()
+const cors = require('cors')
+const cronJobs = require('./src/crons');
 const config = require('./src/config');
 
 app.use(express.json({limit: '20mb'}));

@@ -36,10 +36,11 @@ module.exports = {
   deliveryService: {
     baseUrl: process.env.DELIVERY_SERVICE_URL || 'http://delivery-service.staging.getcarbon.co',
     batchStatusUpdateMaxCount: process.env.BATCH_STATUS_UPDATE_MAX_CONT || 100,
-    deliveryUpdateSchedule: process.env.DELIVERY_UPDATE_SCHEDULE || '0 0 * * * *',
+    deliveryStatusUpdateSchedule: process.env.DELIVERY_UPDATE_SCHEDULE || '0 0 * * * *',
+    rescheduleDeliverySchedule: process.env.RESCHEDULE_DELIVERY_SCHEDULE || '0 0 9 * * *'
   },
   paylaterService: {
-    baseUrl: process.env.PAYLATER_SERVICE_URL || 'http://api.staging.paylater.ng',
+    baseUrl: process.env.PAYLATER_SERVICE_URL || 'https://api.staging.paylater.ng',
     username: process.env.PAYLATER_SERVICE_USERNAME || 'user',
     password: process.env.PAYLATER_SERVICE_PASSWORD || 'pass',
     xAppVersion: process.env.PAYLATER_X_APP_VERSION || '6.5.0'
@@ -52,13 +53,12 @@ module.exports = {
     baseUrl: process.env.MESSAGING_SERVICE_URL || 'https://edoo7n1hs7.execute-api.us-west-2.amazonaws.com/staging',
   },
   batchConfig: {
-    senderEmails: process.env.SENDER_EMAILS || 'customer@getcarbon.co',
-    recipientEmails: process.env.RECIPIENT_EMAILS || ['oahwin@getcarbon.co'],
-    emailSubject: process.env.EMAIL_SUBJECT || 'ORDER DELIVERY BATCH',
-    templateName: process.env.TEMPLATE_NAME || 'card-batch-delivery-staging',
+    senderEmails: process.env.SENDER_EMAILS || 'developers@getcarbon.co',
+    recipientEmails: process.env.RECIPIENT_EMAILS || ['oahwin@getcarbon.co', 'asalau@getcarbon.co'],
+    templateName: process.env.TEMPLATE_NAME || 'card-batch-delivery',
   },
   s3Service: {
-    bucketName: process.env.S3_BUCKET_NAME || 'card-batch-delivery',
+    bucketName: process.env.S3_BUCKET_NAME || 'batch-delivery-staging',
     accessKey: process.env.S3_ACCESS_KEY,
     secret: process.env.S3_SECRET
   },

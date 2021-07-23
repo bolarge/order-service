@@ -1,7 +1,6 @@
 const AWS = require('aws-sdk');
 const s3Config = require('../config').s3Service;
 const fs = require('fs').promises;
-const path = require("path");
 
 AWS.config.update({
   accessKeyId: s3Config.accessKey,
