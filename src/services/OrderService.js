@@ -171,7 +171,7 @@ module.exports.getRescheduleForDeliveryOnly = async () => {
     };
   }
 
-  const fileName = await csvService.generateBatchCsv(clientsDetailsArray);
+  const fileName = await csvService.generateCustomerBatchCsv(clientsDetailsArray);
   const fileAsBase64String = await fs.readFile(`${fileName}`, {encoding: 'base64'});
 
   const sender = batchConfig.senderEmails;
