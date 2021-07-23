@@ -58,16 +58,26 @@ module.exports = {
       });
   },
 
-  handleBatchedCustomerInformation: function (req, res) {
+  batchCustomerInformationForNewDeliveries: function (req, res) {
     const {body} = req
-    return orderService.handleBatchedCustomerInformation(body)
+    return orderService.batchCustomerInformationForNewDeliveries(body)
       .then((result) => {
-        return res.status(200).json(new ServiceResponse(true, 'Batch Customer Information parsed successfully'))
+        return res.status(200).json(new ServiceResponse(true, 'Batch new delivery customer information successfully'))
       })
       .catch((err) => {
         return res.status(500).json(new ServiceResponse(false, err.message, null, [err]))
       });
   },
+
+  batchCustomerInformationForRescheduledDeliveries: function (req, res) {
+    return orderService.batchCustomerInformationForRescheduledDeliveries()
+      .then((result) => {
+        return res.status(200).json(new ServiceResponse(true, 'Batch rescheduled delivery customer information successfully'))
+      })
+      .catch((err) => {
+        return res.status(500).json(new ServiceResponse(false, err.message, null, [err]))
+      });
+  }
 }
 
 
