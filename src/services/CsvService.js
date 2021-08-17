@@ -1,17 +1,16 @@
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 
 module.exports.generateCustomerBatchCsv = async (fileNamePrefix, bulkRequest, dateNow) => {
-  const fileName = `${fileNamePrefix}_` + dateNow;
+  const fileName = `${fileNamePrefix}_` + dateNow + `.xlsx`;
   const csvWriter = createCsvWriter({
     path: fileName,
     header: [
-      {id: 'customerId', title: 'Customer Id'},
-      {id: 'customerFullName', title: 'Name'},
-      {id: 'customerGender', title: 'Gender'},
-      {id: 'customerPhoneNumber', title: 'Phone number'},
+      {id: 'customerId', title: 'ReferenceNo'},
+      {id: 'customerFullName', title: 'RecipientName'},
+      {id: 'deliveryAddress', title: 'RecipientAddress'},
+      {id: 'customerPhoneNumber', title: 'PhoneNo'},
       {id: 'customerEmail', title: 'Email'},
-      {id: 'cardDisplayName', title: 'Card Display Name'},
-      {id: 'deliveryAddress', title: 'Delivery Address'}
+      {id: 'destination', title: 'Destination'},
     ]
   });
   await csvWriter.writeRecords(bulkRequest)
