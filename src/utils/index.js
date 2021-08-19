@@ -18,6 +18,11 @@ module.exports = {
     return md5(base64String);
   },
 
+  getStateFromDeliveryAddress: function (deliveryAddress) {
+    const splitDeliveryAddress = deliveryAddress.split(',');
+    return splitDeliveryAddress[splitDeliveryAddress.length - 2].trim();
+  },
+
   generateRandomString: function (length) {
     length = !length ? 5 : length;
     return Math.random().toString(36).substr(2, length);

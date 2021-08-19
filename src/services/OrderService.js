@@ -15,6 +15,7 @@ const batchConfig = require('../config').batchConfig;
 const messagingService = require('./MessagingService');
 const s3Service = require('./S3Service');
 const path = require("path");
+const Utils = require("../utils");
 
 
 module.exports.createOrder = async (body) => {
@@ -126,7 +127,7 @@ module.exports.batchCustomerInformationForNewDeliveries = async (body) => {
   }
   const dateNow = new Date();
   const dateFormatted = dateNow.getDate() + '-' + (dateNow.getMonth() + 1) + '-' + dateNow.getFullYear();
-  const fileNamePrefix = 'batch_new_delivery_csv'
+  const fileNamePrefix = 'batch_new_delivery'
   const fileName = await csvService.generateCustomerBatchCsv(fileNamePrefix, data, dateFormatted);
   const fileAsBase64String = await fs.readFile(path.resolve(__dirname, `../../${fileName}`), {encoding: 'base64'});
 
@@ -174,11 +175,10 @@ module.exports.batchCustomerInformationForRescheduledDeliveries = async () => {
         let customerInfo = {
           customerId: response.paylaterInfo.clientId,
           customerFullName: `${response.paylaterInfo.firstname} ${response.paylaterInfo.lastname}`,
-          customerGender: response.paylaterInfo.gender,
           customerPhoneNumber: response.paylaterInfo.phonenumber,
           customerEmail: response.paylaterInfo.email,
-          cardDisplayName: `${response.paylaterInfo.firstname} ${response.paylaterInfo.lastname}`,
-          deliveryAddress: response.deliveryAddress
+          deliveryAddress: response.deliveryAddress,
+          destination: Utils.getStateFromDeliveryAddress(response.deliveryAddress)
         }
         customerInfoArray.push(customerInfo);
       }
@@ -186,7 +186,7 @@ module.exports.batchCustomerInformationForRescheduledDeliveries = async () => {
 
   const dateNow = new Date();
   const dateFormatted = dateNow.getDate() + '-' + (dateNow.getMonth() + 1) + '-' + dateNow.getFullYear();
-  const fileNamePrefix = 'batch_rescheduled_delivery_csv'
+  const fileNamePrefix = 'batch_rescheduled_delivery'
   const fileName = await csvService.generateCustomerBatchCsv(fileNamePrefix, customerInfoArray, dateFormatted);
   const fileAsBase64String = await fs.readFile(path.resolve(__dirname, `../../${fileName}`), {encoding: 'base64'});
 
